@@ -1,7 +1,7 @@
 #!/bin/bash
 #  Calibre Auto Updater - The Skript automatically updates your Calibre (http://calibre-ebook.com/)
 #  Installation 
-#    Copyright (C) 2014  Leon Gaultier
+#    Copyright (C) 2013-2014  Leon Gaultier
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -43,6 +43,9 @@
 #
 # V0.6	Verbesserungen in der Terminalausgabe, Startausgabe ist eine eigene Funktion
 #	URL Status Code ist nun eine eigene Funktion
+#
+# V0.7  Der Updateprozes wurde in eine Prozedure geschrieben und die main Prozedure gibt,
+#       nur noch Hilfe und Verion aus oder startet sofort die Update Prozedure
 #
 # TODO	auslesen der Download URL von der Download Seite
 #       kontrolle ob alle benötigten programme für das skript vorhanden sind
@@ -88,7 +91,7 @@ func_usage ()
 func_help ()
 {
     echo "Usage: $progname [OPTION...]"
-    echo "$progname -- the Calibre! Linux Edition calibre updater"
+    echo "$progname -- the Calibre! Linux Edition calibre-autoupdater"
     echo ""
     echo "Options:"
     echo "   -q, --quiet           Disable output"
@@ -100,8 +103,8 @@ func_help ()
 
 func_version ()
 {
-    echo "$progname: the avast! workstation VPS file updater v$version"
-    echo "Copyright (C) Leon Gaultier 2014. This program is distributed"
+    echo "$progname: the Calibre! autoupdater v$version"
+    echo "Copyright (C) Leon Gaultier 2013-2014. This program is distributed"
     echo "in the hope that it will be useful, but WITHOUT ANY WARRANTY"
 
 }
@@ -196,15 +199,15 @@ func_http_status_code () {
 func_term_output () {
   ## Beginne mit der Ausgbe ##
   tty -s && clear
-  echo -e "\033[44m \033[0m\033[1m Calibre AutoUpdate Version $version\033[0m\n\033[44m \033[0m 2014 by Marko Oldenburg\n";
+  echo -e "\033[44m \033[0m\033[1m $progname Version $version\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n";
   return 0
 }
 
-func_check_progs () {
+#func_check_progs () {
 
 
 
-}
+#}
 #######################################################
 ####################################################### 
 ##  main vom Script  --- Start des Updater Skripts
