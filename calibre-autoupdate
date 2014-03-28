@@ -23,33 +23,33 @@
 #
 # Versionsverlauf
 #
-# V0.1   Body des Skriptes erstellt
+# v0.1   Body des Skriptes erstellt
 #        Abfrage neuste Version vorhanden
 #        Abfrage welche Version installiert
 #        Funktion Versionsvergleich
 #	 Download und installation der neusten Version
 #        Desktopmeldungen hinzugefügt
 # 
-# V0.2   Verbesserungen bei den Desktopmeldungen
+# v0.2   Verbesserungen bei den Desktopmeldungen
 #
-# V0.3   Funktion Check Verfügbarkeit der Downloadseiten hinzugefügt
+# v0.3   Funktion Check Verfügbarkeit der Downloadseiten hinzugefügt
 #
-# V0.4	Check Verfügbarkeit auf Test Netzwerk vorhanden und Auswertung erweitert
+# v0.4	Check Verfügbarkeit auf Test Netzwerk vorhanden und Auswertung erweitert
 #	diverse Kommentare hinzugefügt
 #
-# V0.5	Funktion Check läuft noch eine Calibre Instanz mit Counter
+# v0.5	Funktion Check läuft noch eine Calibre Instanz mit Counter
 #	Ausgabe Texte verbessert und erweitert
 #	URL Statuscodes holen ins main verlagert. !TODO Soll eigene Funktion werden
 #
-# V0.6	Verbesserungen in der Terminalausgabe, Startausgabe ist eine eigene Funktion
+# v0.6	Verbesserungen in der Terminalausgabe, Startausgabe ist eine eigene Funktion
 #	URL Status Code ist nun eine eigene Funktion
 #
-# V0.7  Der Updateprozes wurde in eine Prozedure geschrieben und die main Prozedure gibt,
+# v0.7  Der Updateprozes wurde in eine Prozedure geschrieben und die main Prozedure gibt,
 #       nur noch Hilfe und Verion aus oder startet sofort die Update Prozedure
 #
-# V0.8	Optionsschalter hinzugefügt, Kontrolle ob benötigte Programme vorhanden sind.
+# v0.8	Optionsschalter hinzugefügt, Kontrolle ob benötigte Programme vorhanden sind.
 #	Unterschiedliche Installationsart und -dialog je nach dem ob man Schreibrechte
-#	auf im Calibre Installationspath hat oder nicht.
+#	auf im Calibre Installationspfad hat oder nicht.
 #
 # TODO	auslesen der Download URL von der Download Seite
 #       kontrolle ob alle benötigten programme für das skript vorhanden sind
@@ -84,7 +84,7 @@ AWK=/usr/bin/awk
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.7.991"
+VERSION="0.8"
 QUIET=0
 
 
@@ -230,18 +230,19 @@ func_check_prog () {
     exit 1
   fi
   
-  if test ! -f $NOTIFY ; then
-    echo -e "\033[31mDu hast Notify-Send nich installiert, es wird aber für die Updatefunktion benötigt\n"; >&2
-    exit 1
-  fi
-
   if test ! -f $AWK ; then
     echo -e "\033[31mDu hast AWK nich installiert, es wird aber für die Updatefunktion benötigt\n"; >&2
     exit 1
+  
+  if test ! -f $NOTIFY ; then
+    echo -e "\e[0;33mDu hast Notify-Send nich installiert, das Programm ist optional und wird"; >&2
+    echo -e "für die Upatefunktion nicht unbedingt benötigt\n"; >&2
+    sleep 10
   fi
   
+  fi  
     echo -e "\033[32mAlle benötigten Programme sind installiert. Starte $PROGNAME ohne Optionen und"
-    echo -e "es wird nach einer aktuellen Calibre Version geschaut und Upgedatet\n";
+    echo -e "es wird nach einer aktuellen Calibre Version geschaut\n";
 }
 #######################################################
 ####################################################### 
@@ -277,7 +278,7 @@ case $? in
 	        echo -e "\033[1;34m"
 	        wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
 	     else	     	     
-		$NOTIFY "Das Update wird nun installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
+		$NOTIFY "Du hast kein Schreibrecht auf \"$CALIBRE_INSTALL_LOCATION\". Das Update wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
 		echo -e "\033[1;34m"
 		sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"	
 	     fi
