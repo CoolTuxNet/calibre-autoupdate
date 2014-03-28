@@ -47,6 +47,10 @@
 # V0.7  Der Updateprozes wurde in eine Prozedure geschrieben und die main Prozedure gibt,
 #       nur noch Hilfe und Verion aus oder startet sofort die Update Prozedure
 #
+# V0.8	Optionsschalter hinzugefügt, Kontrolle ob benötigte Programme vorhanden sind.
+#	Unterschiedliche Installationsart und -dialog je nach dem ob man Schreibrechte
+#	auf im Calibre Installationspath hat oder nicht.
+#
 # TODO	auslesen der Download URL von der Download Seite
 #       kontrolle ob alle benötigten programme für das skript vorhanden sind
 #
@@ -73,10 +77,15 @@ DOWNLOAD_URL=https://github.com/kovidgoyal/calibre/raw/master/setup/linux-instal
 CHECK_CALIBRE_DOWNLOAD_PAGE=http://calibre-ebook.com
 CHECK_DOWNLOAD_URL=https://github.com
 
+# externe Programme welche benötigt werden
+CURL=/usr/bin/curl
+NOTIFY=/usr/bin/notify-send
+AWK=/usr/bin/awk
+
 # Programmversion
-progname=`basename $0`
-version="0.7"
-quiet=0
+PROGNAME=`basename $0`
+VERSION="0.7.991"
+QUIET=0
 
 
 #################################
@@ -84,26 +93,28 @@ quiet=0
 
 func_usage ()
 {
-    echo "Usage: $progname [OPTION...]"
-    echo "Try '$progname --help' or '$progname -h' for more information."
+    echo "Usage: $PROGNAME [OPTION...]"
+    echo "Try '$PROGNAME --help' or '$PROGNAME -h' for more information."
 }
 
 func_help ()
 {
-    echo "Usage: $progname [OPTION...]"
-    echo "$progname -- the Calibre! Linux Edition calibre-autoupdater"
+    func_term_output
+    echo "Usage: $PROGNAME [OPTION...]"
+    echo "$PROGNAME -- the Calibre! Linux Edition calibre-autoupdater"
     echo ""
     echo "Options:"
-    echo "   -q, --quiet           Disable output"
-    echo "   -h, --help            Give this help list"
-    echo "   -V, --version         Print program version"
+    echo "   -q, --quiet           ohne Konsolenausgabe"
+    echo "   -h, --help            zeigt die Hilfe an"
+    echo "   -V, --version         gibt die Programmversion aus"
+    echo "   -c, --check           checkt ob benötigte Programme vorhanden sind"
     echo ""
-    echo "Report bugs to <leongaultier@gmail.com>."
+    echo -e "Report bugs to <leongaultier@gmail.com>.\n";
 }
 
 func_version ()
 {
-    echo "$progname: the Calibre! autoupdater v$version"
+    echo "$PROGNAME: the Calibre! autoupdater v$VERSION"
     echo "Copyright (C) Leon Gaultier 2013-2014. This program is distributed"
     echo "in the hope that it will be useful, but WITHOUT ANY WARRANTY"
 
@@ -199,7 +210,7 @@ func_http_status_code () {
 func_term_output () {
   ## Beginne mit der Ausgbe ##
   tty -s && clear
-  echo -e "\033[44m \033[0m\033[1m $progname Version $version\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n";
+  echo -e "\033[44m \033[0m\033[1m $PROGNAME Version $VERSION\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n";
   return 0
 }
 
@@ -212,11 +223,26 @@ func_check_version () {
 }
 
 
-#func_check_progs () {
+func_check_prog () {
+  func_term_output  
+  if test ! -f $CURL ; then
+    echo -e "\033[31mDu hast Curl nich installiert, es wird aber für die Updatefunktion benötigt\n"; >&2
+    exit 1
+  fi
+  
+  if test ! -f $NOTIFY ; then
+    echo -e "\033[31mDu hast Notify-Send nich installiert, es wird aber für die Updatefunktion benötigt\n"; >&2
+    exit 1
+  fi
 
-
-
-#}
+  if test ! -f $AWK ; then
+    echo -e "\033[31mDu hast AWK nich installiert, es wird aber für die Updatefunktion benötigt\n"; >&2
+    exit 1
+  fi
+  
+    echo -e "\033[32mAlle benötigten Programme sind installiert. Starte $PROGNAME ohne Optionen und"
+    echo -e "es wird nach einer aktuellen Calibre Version geschaut und Upgedatet\n";
+}
 #######################################################
 ####################################################### 
 ##  main vom Script  --- Start des Updater Skripts
@@ -245,10 +271,16 @@ case $? in
 	     $NOTIFY "Ein Calibre Update ist verfügbar. (Installiert: \"$CURRENT_VERSION\", letzte Verfügbare: \"$LATEST_VERSION\")"
 	     # Installiert die aktuellste verfügbare Version von der Calibre Homepage
 	     func_check_run_calibre # Aufruf der Funktion ob Calibre gestartet ist
-	     $NOTIFY "Das Update wird nun installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
-	     echo -e "\033[1;34m"
-	     sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"	
-# 
+	     
+	     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
+		$NOTIFY "Du hast Schreibrechte auf \"$CALIBRE_INSTALL_LOCATION\" Das Update wird nun installiert..."
+	        echo -e "\033[1;34m"
+	        wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
+	     else	     	     
+		$NOTIFY "Das Update wird nun installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
+		echo -e "\033[1;34m"
+		sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"	
+	     fi
 	     $NOTIFY "Calibre wurde upgedatet." 
 	     ;;
        esac
@@ -278,14 +310,17 @@ do
 
   case "$arg" in
       --quiet | -q )
-	  quiet=1 ;;
+	  QUIET=1 ;;
       --help | -h )
 	  func_help; exit 0 ;;
       --version | -V | -v )
 	  func_version; exit 0 ;;
+      --check | -C | -c )
+	  func_check_prog; exit 0 ;;
   esac
 
 done
+func_check_prog
 func_update
 
 exit 0
