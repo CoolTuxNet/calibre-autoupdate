@@ -2,8 +2,6 @@
 #    Copyright (C) 2013-2014  Leon Gaultier
 #
 
-
-
 func_usage ()
 {
     echo "Usage: $PROGNAME [OPTION...]"

@@ -78,12 +78,10 @@ source ./calibre-autoupdate.conf
 
 
 #################################
-##### Zusätzliche Funktionen #####
+##### Zusätzliche Funktionen aus Headerfiles laden #####
 
-./calibre-autoupdate.h
-./calibre-autoupdate_checks.h
-
-
+source ./calibre-autoupdate.h
+source ./calibre-autoupdate_checks.h
 
 
 func_http_status_code () {
@@ -113,7 +111,8 @@ func_update () {
 NOTIFY="echo"
 [ -n "$DISPLAY" ] && NOTIFY="notify-send -t 10000 -i /usr/share/icons/hicolor/256x256/apps/calibre-gui.png Calibre-Auto-Updater"
 
-func_term_output
+
+func_term_output    # Funktion für Konsolenausgabe
 
 func_http_status_code	# Funktion hole einen http-status code
 
