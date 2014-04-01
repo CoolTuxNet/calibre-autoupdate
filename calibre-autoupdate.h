@@ -12,7 +12,7 @@ func_help ()
 {
     func_term_output
     echo "Usage: $PROGNAME [OPTION...]"
-    echo "$PROGNAME -- the Calibre! Linux Edition calibre-autoupdater"
+    echo "$PROGNAME -- the Calibre! Linux Edition calibre-autoupdater (CAU)"
     echo ""
     echo "Options:"
     echo "   -q, --quiet           ohne Konsolenausgabe"

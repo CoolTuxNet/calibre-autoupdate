@@ -52,6 +52,7 @@
 #	auf im Calibre Installationspfad hat oder nicht.
 #
 # v0.9  einbinden eines Konfigurationsfiles, auslagern einiger Funktionen in Headerfiles
+#       einbringen der Dateien in die Linux Verzeichnishierarchie
 #
 # TODO	auslesen der Download URL von der Download Seite
 #       kontrolle ob alle benötigten programme für das skript vorhanden sind
@@ -60,12 +61,15 @@
 ######################################
 ######################################
 
+# Installationsfade in der Verzeichnishierarchie
+INC=/usr/local/include/
+ETC=/usr/local/etc/
+BIN=/usr/local/bin/
+
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.8.99"
+VERSION="0.9"
 QUIET=0
-
-
 
 #################################
 ######### CONFIGURATION #########
@@ -74,23 +78,23 @@ QUIET=0
 #################################
 
 # Einlesen des Configfiles mit den Constanten für die Calibre Downloadseite und Hauptseite
-source ./calibre-autoupdate.conf
+source $ETC/calibre-autoupdate.conf
 
 
 #################################
 ##### Zusätzliche Funktionen aus Headerfiles laden #####
 
-source ./calibre-autoupdate.h
-source ./calibre-autoupdate_checks.h
+source $INC/calibre-autoupdate.h
+source $INC/calibre-autoupdate_checks.h
 
 
 func_http_status_code () {
-  echo -e "\033[1;34m Hole Status Code von \"$CHECK_CALIBRE_DOWNLOAD_PAGE\". Bitte warten.";
+  echo -e "\033[1;34m Hole Status Code von $CHECK_CALIBRE_DOWNLOAD_PAGE. Bitte warten.";
   stat_1=$(curl -o /dev/null --silent --head --write-out '%{http_code}' $CHECK_CALIBRE_DOWNLOAD_PAGE)
-  echo -e "\033[32m Status Codes von \"$CHECK_CALIBRE_DOWNLOAD_PAGE\" erhalten";
-  echo -e "\033[1;34m Hole Status Code von \"$CHECK_DOWNLOAD_URL\". Bitte warten.";
+  echo -e "\033[32m Status Codes von $CHECK_CALIBRE_DOWNLOAD_PAGE erhalten";
+  echo -e "\033[1;34m Hole Status Code von $CHECK_DOWNLOAD_URL. Bitte warten.";
   stat_2=$(curl -o /dev/null --silent --head --write-out '%{http_code}' $CHECK_DOWNLOAD_URL)
-  echo -e "\033[32m Status Codes von \"$CHECK_DOWNLOAD_URL\" erhalten";
+  echo -e "\033[32m Status Codes von $CHECK_DOWNLOAD_URL erhalten";
   return 0
 }
 
@@ -126,18 +130,18 @@ case $? in
 	   0) 
 	     $NOTIFY "Deine Calibre Version ist auf dem aktuellsten Stand ($CURRENT_VERSION).";;
 	   1) 
-	     $NOTIFY "Uh Oh! Deine Calibre Version ist aktueller wie die letzte Verfügbare! (Installiert: \"$CURRENT_VERSION\", Letzte Verfügbare: \"$LATEST_VERSION\")";;
+	     $NOTIFY "Uh Oh! Deine Calibre Version ist aktueller wie die letzte Verfügbare! (Installiert: $CURRENT_VERSION, Letzte Verfügbare: $LATEST_VERSION)";;
 	   2) 
-	     $NOTIFY "Ein Calibre Update ist verfügbar. (Installiert: \"$CURRENT_VERSION\", letzte Verfügbare: \"$LATEST_VERSION\")"
+	     $NOTIFY "Ein Calibre Update ist verfügbar. (Installiert: $CURRENT_VERSION, letzte Verfügbare: $LATEST_VERSION)"
 	     # Installiert die aktuellste verfügbare Version von der Calibre Homepage
 	     func_check_run_calibre # Aufruf der Funktion ob Calibre gestartet ist
 	     
 	     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
-		$NOTIFY "Du hast Schreibrechte auf \"$CALIBRE_INSTALL_LOCATION\" Das Update wird nun installiert..."
+		$NOTIFY "Du hast Schreibrechte auf $CALIBRE_INSTALL_LOCATION Das Update wird nun installiert..."
 	        echo -e "\033[1;34m"
 	        wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
 	     else	     	     
-		$NOTIFY "Du hast kein Schreibrecht auf \"$CALIBRE_INSTALL_LOCATION\". Das Update wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
+		$NOTIFY "Du hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Das Update wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
 		echo -e "\033[1;34m"
 		sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"	
 	     fi
@@ -147,10 +151,10 @@ case $? in
        ;;
     
     2)
-    $NOTIFY "Versionsvergleich fehlgeschlagen!!! Die Calibre Homepage \"$CHECK_CALIBRE_DOWNLOAD_PAGE\" ist nicht verfügbar!"
+    $NOTIFY "Versionsvergleich fehlgeschlagen!!! Die Calibre Homepage $CHECK_CALIBRE_DOWNLOAD_PAGE ist nicht verfügbar!"
      ;;
     3)
-    $NOTIFY "Update fehlgeschlagen!!! Die Download Seite \"$CHECK_DOWNLOAD_URL\" ist nicht verfügbar!"
+    $NOTIFY "Update fehlgeschlagen!!! Die Download Seite $CHECK_DOWNLOAD_URL ist nicht verfügbar!"
      ;;
     4)
     $NOTIFY "Update und Versionsvergleich fehlgeschlagen!!! Kann kein Netzwerkinterface finden!"
