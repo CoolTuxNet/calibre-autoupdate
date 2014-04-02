@@ -1,0 +1,192 @@
+#!/bin/bash
+#  Calibre Auto Updater - The Skript automatically updates your Calibre (http://calibre-ebook.com/)
+#  Installation 
+#    Copyright (C) 2013-2014  Leon Gaultier
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
+#
+
+
+####################################
+####################################
+#
+# Versionsverlauf
+#
+# v0.1    Body des Skriptes erstellt
+#         Abfrage neuste Version vorhanden
+#         Abfrage welche Version installiert
+#         Funktion Versionsvergleich
+#	  Download und installation der neusten Version
+#         Desktopmeldungen hinzugefügt
+# 
+# v0.2    Verbesserungen bei den Desktopmeldungen
+#
+# v0.3    Funktion Check Verfügbarkeit der Downloadseiten hinzugefügt
+#
+# v0.4	 Check Verfügbarkeit auf Test Netzwerk vorhanden und Auswertung erweitert
+#	 diverse Kommentare hinzugefügt
+#
+# v0.5	 Funktion Check läuft noch eine Calibre Instanz mit Counter
+#	 Ausgabe Texte verbessert und erweitert
+#	 URL Statuscodes holen ins main verlagert.
+#
+# v0.6	 Verbesserungen in der Terminalausgabe, Startausgabe ist eine eigene Funktion
+#	 URL Status Code ist nun eine eigene Funktion
+#
+# v0.7   Der Updateprozes wurde in eine Prozedure geschrieben und die main Prozedure gibt,
+#        nur noch Hilfe und Verion aus oder startet sofort die Update Prozedure
+#
+# v0.8	 Optionsschalter hinzugefügt, Kontrolle ob benötigte Programme vorhanden sind.
+#	 Unterschiedliche Installationsart und -dialog je nach dem ob man Schreibrechte
+#	 auf im Calibre Installationspfad hat oder nicht.
+#
+# v0.9   einbinden eines Konfigurationsfiles, auslagern einiger Funktionen in Headerfiles
+#        einbringen der Dateien in die Linux Verzeichnishierarchie
+# v0.10  hinzufügen eines Installationsskriptes für den calibre-autoupdater, Installsript prüft
+#        vorhanden sein von calibre und des updaters und fragt nach Installationsort des Updaters
+#
+# TODO	auslesen der Download URL von der Download Seite
+#       kontrolle ob alle benötigten programme für das skript vorhanden sind
+#
+#
+######################################
+######################################
+
+# Installationsfade in der Verzeichnishierarchie
+INC=/usr/local/include/
+ETC=/usr/local/etc/
+BIN=/usr/local/bin/
+
+# Programmversion
+PROGNAME=`basename $0`
+VERSION="0.9"
+QUIET=0
+
+#################################
+######### CONFIGURATION #########
+# Diese Version funktioniert für alle Linuxsysteme nur so lange
+# bis Veränderungen auf der Internetseite durchgeführt wurden
+#################################
+
+# Einlesen des Configfiles mit den Constanten für die Calibre Downloadseite und Hauptseite
+source $ETC/calibre-autoupdate.conf
+
+
+#################################
+##### Zusätzliche Funktionen aus Headerfiles laden #####
+
+source $INC/calibre-autoupdate.h
+source $INC/calibre-autoupdate_checks.h
+
+
+func_http_status_code () {
+  echo -e "\033[1;34m Hole Status Code von $CHECK_CALIBRE_DOWNLOAD_PAGE. Bitte warten.";
+  stat_1=$(curl -o /dev/null --silent --head --write-out '%{http_code}' $CHECK_CALIBRE_DOWNLOAD_PAGE)
+  echo -e "\033[32m Status Codes von $CHECK_CALIBRE_DOWNLOAD_PAGE erhalten";
+  echo -e "\033[1;34m Hole Status Code von $CHECK_DOWNLOAD_URL. Bitte warten.";
+  stat_2=$(curl -o /dev/null --silent --head --write-out '%{http_code}' $CHECK_DOWNLOAD_URL)
+  echo -e "\033[32m Status Codes von $CHECK_DOWNLOAD_URL erhalten";
+  return 0
+}
+
+func_term_output () {
+  ## Beginne mit der Ausgbe ##
+  tty -s && clear
+  echo -e "\033[44m \033[0m\033[1m $PROGNAME Version $VERSION\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n";
+  return 0
+}
+
+
+#######################################################
+####################################################### 
+##  main vom Script  --- Start des Updater Skripts
+
+func_update () {
+# Wenn eine grafische Oberfläche vorhanden ist, wird u.a. "notify-send" für Benachrichtigungen verwendet, ansonsten immer "echo"
+NOTIFY="echo"
+[ -n "$DISPLAY" ] && NOTIFY="notify-send -t 10000 -i /usr/share/icons/hicolor/256x256/apps/calibre-gui.png Calibre-Auto-Updater"
+
+
+func_term_output    # Funktion für Konsolenausgabe
+
+func_http_status_code	# Funktion hole einen http-status code
+
+func_check_stat  # Funktion check Status Netzwerk und Downloadadressen
+
+case $? in
+    1)
+       func_check_version
+       func_vercomp $CURRENT_VERSION $LATEST_VERSION     # Funktion Versionvergleich
+       case $? in
+	   0) 
+	     $NOTIFY "Deine Calibre Version ist auf dem aktuellsten Stand ($CURRENT_VERSION).";;
+	   1) 
+	     $NOTIFY "Uh Oh! Deine Calibre Version ist aktueller wie die letzte Verfügbare! (Installiert: $CURRENT_VERSION, Letzte Verfügbare: $LATEST_VERSION)";;
+	   2) 
+	     $NOTIFY "Ein Calibre Update ist verfügbar. (Installiert: $CURRENT_VERSION, letzte Verfügbare: $LATEST_VERSION)"
+	     # Installiert die aktuellste verfügbare Version von der Calibre Homepage
+	     func_check_run_calibre # Aufruf der Funktion ob Calibre gestartet ist
+	     
+	     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
+		$NOTIFY "Du hast Schreibrechte auf $CALIBRE_INSTALL_LOCATION Das Update wird nun installiert..."
+	        echo -e "\033[1;34m"
+	        wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
+	     else	     	     
+		$NOTIFY "Du hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Das Update wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
+		echo -e "\033[1;34m"
+		sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"	
+	     fi
+	     $NOTIFY "Calibre wurde upgedatet." 
+	     ;;
+       esac
+       ;;
+    
+    2)
+    $NOTIFY "Versionsvergleich fehlgeschlagen!!! Die Calibre Homepage $CHECK_CALIBRE_DOWNLOAD_PAGE ist nicht verfügbar!"
+     ;;
+    3)
+    $NOTIFY "Update fehlgeschlagen!!! Die Download Seite $CHECK_DOWNLOAD_URL ist nicht verfügbar!"
+     ;;
+    4)
+    $NOTIFY "Update und Versionsvergleich fehlgeschlagen!!! Kann kein Netzwerkinterface finden!"
+    ;;
+esac
+}
+
+while test "$#" -gt 0
+do
+  arg="$1"
+  shift
+
+  case $arg in
+      -*=*) optarg=`echo "$arg" | sed -e 's/[-_a-zA-Z0-9]*=//'` ;;
+      *) optarg= ;;
+  esac
+
+  case "$arg" in
+      --quiet | -q )
+	  QUIET=1 ;;
+      --help | -h )
+	  func_help; exit 0 ;;
+      --version | -V | -v )
+	  func_version; exit 0 ;;
+      --check | -C | -c )
+	  func_check_prog; exit 0 ;;
+  esac
+
+done
+func_check_prog
+func_update
+
+exit 0
