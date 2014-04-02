@@ -39,7 +39,7 @@
 #
 # v0.5	 Funktion Check läuft noch eine Calibre Instanz mit Counter
 #	 Ausgabe Texte verbessert und erweitert
-#	 URL Statuscodes holen ins main verlagert. !TODO Soll eigene Funktion werden
+#	 URL Statuscodes holen ins main verlagert.
 #
 # v0.6	 Verbesserungen in der Terminalausgabe, Startausgabe ist eine eigene Funktion
 #	 URL Status Code ist nun eine eigene Funktion
