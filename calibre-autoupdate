@@ -23,36 +23,38 @@
 #
 # Versionsverlauf
 #
-# v0.1   Body des Skriptes erstellt
-#        Abfrage neuste Version vorhanden
-#        Abfrage welche Version installiert
-#        Funktion Versionsvergleich
-#	 Download und installation der neusten Version
-#        Desktopmeldungen hinzugefügt
+# v0.1    Body des Skriptes erstellt
+#         Abfrage neuste Version vorhanden
+#         Abfrage welche Version installiert
+#         Funktion Versionsvergleich
+#	  Download und installation der neusten Version
+#         Desktopmeldungen hinzugefügt
 # 
-# v0.2   Verbesserungen bei den Desktopmeldungen
+# v0.2    Verbesserungen bei den Desktopmeldungen
 #
-# v0.3   Funktion Check Verfügbarkeit der Downloadseiten hinzugefügt
+# v0.3    Funktion Check Verfügbarkeit der Downloadseiten hinzugefügt
 #
-# v0.4	Check Verfügbarkeit auf Test Netzwerk vorhanden und Auswertung erweitert
-#	diverse Kommentare hinzugefügt
+# v0.4	 Check Verfügbarkeit auf Test Netzwerk vorhanden und Auswertung erweitert
+#	 diverse Kommentare hinzugefügt
 #
-# v0.5	Funktion Check läuft noch eine Calibre Instanz mit Counter
-#	Ausgabe Texte verbessert und erweitert
-#	URL Statuscodes holen ins main verlagert. !TODO Soll eigene Funktion werden
+# v0.5	 Funktion Check läuft noch eine Calibre Instanz mit Counter
+#	 Ausgabe Texte verbessert und erweitert
+#	 URL Statuscodes holen ins main verlagert. !TODO Soll eigene Funktion werden
 #
-# v0.6	Verbesserungen in der Terminalausgabe, Startausgabe ist eine eigene Funktion
-#	URL Status Code ist nun eine eigene Funktion
+# v0.6	 Verbesserungen in der Terminalausgabe, Startausgabe ist eine eigene Funktion
+#	 URL Status Code ist nun eine eigene Funktion
 #
-# v0.7  Der Updateprozes wurde in eine Prozedure geschrieben und die main Prozedure gibt,
-#       nur noch Hilfe und Verion aus oder startet sofort die Update Prozedure
+# v0.7   Der Updateprozes wurde in eine Prozedure geschrieben und die main Prozedure gibt,
+#        nur noch Hilfe und Verion aus oder startet sofort die Update Prozedure
 #
-# v0.8	Optionsschalter hinzugefügt, Kontrolle ob benötigte Programme vorhanden sind.
-#	Unterschiedliche Installationsart und -dialog je nach dem ob man Schreibrechte
-#	auf im Calibre Installationspfad hat oder nicht.
+# v0.8	 Optionsschalter hinzugefügt, Kontrolle ob benötigte Programme vorhanden sind.
+#	 Unterschiedliche Installationsart und -dialog je nach dem ob man Schreibrechte
+#	 auf im Calibre Installationspfad hat oder nicht.
 #
-# v0.9  einbinden eines Konfigurationsfiles, auslagern einiger Funktionen in Headerfiles
-#       einbringen der Dateien in die Linux Verzeichnishierarchie
+# v0.9   einbinden eines Konfigurationsfiles, auslagern einiger Funktionen in Headerfiles
+#        einbringen der Dateien in die Linux Verzeichnishierarchie
+# v0.10  hinzufügen eines Installationsskriptes für den calibre-autoupdater, Installsript prüft
+#        vorhanden sein von calibre und des updaters und fragt nach Installationsort des Updaters
 #
 # TODO	auslesen der Download URL von der Download Seite
 #       kontrolle ob alle benötigten programme für das skript vorhanden sind

@@ -2,7 +2,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.3"
+VERSION="0.6"
 QUIET=0
 
 func_term_output () {
@@ -29,6 +29,7 @@ func_help ()     # Listet alle Optionsschalter auf
     echo "   -h, --help            zeigt die Hilfe an"
     echo "   -V, --version         gibt die Programmversion aus"
     echo "   -i, --install         installiert den Calibre-Autoupdater (CAU)"
+    #echo "   -u, --uninstall       deinstalliert den Calibre-Autoupdater (CAU)"
     echo ""
     echo -e "Report bugs to <leongaultier@gmail.com>.\n";
 }
@@ -67,8 +68,8 @@ func_check_dir()  # Install oder Update Calibre Updater, Check ob Calibre überh
         exit 1
     fi
 
-    if test -f $BIN/calibre-autoupdate ; then
-	while ((!gueltig)); do
+    if test -f $BIN/calibre-autoupdate ; then  # Updater bereits installiert?
+	while ((!gueltig)); do    # beginn der Ja/Nein Abfrage
 	echo -e "\033[1;34m"
 	read -sn1 -t 30 -p "Der calibre-autoupdater ist bereits installiert. Möchtest Du ein Update durchführen? [j/n] " answer
 	echo -e "\e[m"
@@ -107,7 +108,7 @@ func_check_dir
 	
     else	     	     
 	echo -e "\n\033[1;34mDu hast kein Schreibrecht auf $UPDATER_INSTALL_LOCATION, daher wird SUDO versucht zu verwenden...\e[m";
-	echo -e "\n\033[1;32mProgrammdatei wird nach $BIN kopiert\e[m\e[m"; sleep 3
+	echo -e "\n\033[1;32mProgrammdatei wird nach $BIN kopiert\e[m\e[m";
 	sudo cp -v calibre-autoupdate $BIN
 	sudo chmod -v 755 $BIN/calibre-autoupdate;
 	echo -e "\n\033[1;32mDie Header-Dateien werden nach $INC kopiert\e[m"; sleep 3
@@ -118,6 +119,12 @@ func_check_dir
 	sudo chmod -v 644 $ETC/calibre-autoupdate.conf;
     fi
     echo -e "\n\033[1;36mDer Calibre-Autoupdater wurde erfolgreich installiert\e[m\n"
+}
+
+func_uninstall()
+{
+echo
+# ist geplant
 }
 
 while test "$#" -gt 0
@@ -139,6 +146,8 @@ do
 	  func_version; exit 0 ;;
       --install | -i )
 	  func_install; exit 0 ;;
+      --uninstall | -u )
+	  func_uninstall; exit 0;;
   esac
 
 done
