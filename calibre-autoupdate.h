@@ -1,33 +1,33 @@
-#  Calibre Auto Updater Configfile
+#  Calibre Auto Updater Header File
 #    Copyright (C) 2013-2014  Leon Gaultier
 #
 
 func_usage ()
 {
-    echo "Usage: $PROGNAME [OPTION...]"
-    echo "Try '$PROGNAME --help' or '$PROGNAME -h' for more information."
+    echo "Verwendung: $PROGNAME [OPTION...]"
+    echo "Verwende '$PROGNAME --help' oder '$PROGNAME -h' für mehr Informationen."
 }
 
 func_help ()
 {
     func_term_output
-    echo "Usage: $PROGNAME [OPTION...]"
-    echo "$PROGNAME -- the Calibre! Linux Edition calibre-autoupdater (CAU)"
+    echo "Verwende: $PROGNAME [OPTION...]"
+    echo "$PROGNAME -- Der Calibre! Linux Edition calibre-autoupdater (CAU)"
     echo ""
     echo "Options:"
     echo "   -q, --quiet           ohne Konsolenausgabe"
     echo "   -h, --help            zeigt die Hilfe an"
     echo "   -V, --version         gibt die Programmversion aus"
-    echo "   -c, --check           checkt ob benötigte Programme vorhanden sind"
+    echo "   -c, --check           kontrolliert ob benötigte Programme vorhanden sind"
     echo ""
-    echo -e "Report bugs to <leongaultier@gmail.com>.\n";
+    echo -e "Sende Fehler an <leongaultier@gmail.com>.\n";
 }
 
 func_version ()
 {
-    echo "$PROGNAME: the Calibre! autoupdater v$VERSION"
-    echo "Copyright (C) Leon Gaultier 2013-2014. This program is distributed"
-    echo "in the hope that it will be useful, but WITHOUT ANY WARRANTY"
+    echo "$PROGNAME: Der Calibre! autoupdater v$VERSION"
+    echo "Leon Gaultier 2013-2014. Das Programm darf verteilt werden,"
+    echo "in der Hoffnung das es hilfreich ist, aber OHNR IRGENDEINE GARANTIE"
 
 }
 
