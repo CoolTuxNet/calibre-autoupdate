@@ -56,6 +56,11 @@
 # v0.10  hinzufügen eines Installationsskriptes für den calibre-autoupdater, Installsript prüft
 #        vorhanden sein von calibre und des updaters und fragt nach Installationsort des Updaters
 #
+# v0.11  Das Mainscript wurde angepasst so das der Installer die ermittelten Variablen für den
+#        Installationsort in das Mainscript und die Konfigdatei schreiben kann.
+#        Es wurden diverse Ausgabentexte sprachlich verbessert und Fehler beseitigt.
+#        !!! Das ist die erste Version welche eine reibungslose Installation und einen reibungslosen
+#        betrieb unter allen Linuxvarianten ermöglicht !!!
 # TODO	auslesen der Download URL von der Download Seite
 #       kontrolle ob alle benötigten programme für das skript vorhanden sind
 #
@@ -64,13 +69,13 @@
 ######################################
 
 # Installationsfade in der Verzeichnishierarchie
-INC=/usr/local/include/
-ETC=/usr/local/etc/
-BIN=/usr/local/bin/
+INC=_-INC-_
+ETC=_-ETC-_
+BIN=_-BIN-_
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.9"
+VERSION="_-VERSION-_"
 QUIET=0
 
 #################################
@@ -139,7 +144,7 @@ case $? in
 	     func_check_run_calibre # Aufruf der Funktion ob Calibre gestartet ist
 	     
 	     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
-		$NOTIFY "Du hast Schreibrechte auf $CALIBRE_INSTALL_LOCATION Das Update wird nun installiert..."
+		$NOTIFY "Das Update wird nun installiert..."
 	        echo -e "\033[1;34m"
 	        wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
 	     else	     	     
@@ -147,7 +152,7 @@ case $? in
 		echo -e "\033[1;34m"
 		sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"	
 	     fi
-	     $NOTIFY "Calibre wurde upgedatet." 
+	     $NOTIFY "Calibre wurde auf die neuste Version aktuallisiert." 
 	     ;;
        esac
        ;;
