@@ -1,4 +1,4 @@
-#  Calibre Auto Updater Header File
+#  Calibre Auto Updater Configfile
 #    Copyright (C) 2013-2014  Leon Gaultier
 #
 
@@ -23,7 +23,7 @@ if [ $ONLINE ]; then
 	  return 3
       fi
 else
-    echo -e "\033[31m Fehler!!! Bitte schau Dir die Desktop Benachrichtigung an!";
+    echo -e "\033[31m Fehler!!! Sieh Dir die verdammte Desktop Benachrichtigung an!";
     return 4
 fi
 }
@@ -70,7 +70,7 @@ func_check_prog () {
   
   if test ! -f $NOTIFY ; then
     echo -e "\e[0;33mDu hast Notify-Send nich installiert, das Programm ist optional und wird"; >&2
-    echo -e "für die Upatefunktion nicht unbedingt benötigt. Ist aber ne Coole Sache ;-)\n"; >&2
+    echo -e "für die Upatefunktion nicht unbedingt benötigt\n"; >&2
     sleep 10
   fi
   
