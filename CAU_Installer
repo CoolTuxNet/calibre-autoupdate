@@ -2,7 +2,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.11"
+VERSION="0.11a"
 QUIET=0
 
 func_term_output () {
@@ -49,10 +49,10 @@ read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local
   if [ -z $UPDATER_INSTALL_LOCATION ]; then
       UPDATER_INSTALL_LOCATION=/usr/local      
   fi
-read -p "Wo befindet sich die Calibre Installation? [default /opt/calibre] " CALIBRE_INSTALL_LOCATION
+read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
   
   if [ -z $CALIBRE_INSTALL_LOCATION ]; then
-      CALIBRE_INSTALL_LOCATION=/opt/calibre      
+      CALIBRE_INSTALL_LOCATION=/opt      
   fi
 
 # Installationsfade in der Verzeichnishierarchie
@@ -63,7 +63,7 @@ BIN=$UPDATER_INSTALL_LOCATION/bin/
 
 func_check_dir()  # Install oder Update Calibre Updater, Check ob Calibre überhaupt installiert ist
 {
-    if test ! -d $CALIBRE_INSTALL_LOCATION ; then
+    if test ! -d $CALIBRE_INSTALL_LOCATION/calibre ; then
         echo -e "\n\033[1;31mKeine Calibre Installation unter $CALIBRE_INSTALL_LOCATION gefunden. Installation des Updaters nicht möglich.\e[m\n"; >&2
         exit 1
     fi
