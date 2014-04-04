@@ -40,7 +40,7 @@ func_check_run_calibre () {
       echo -e "\033[31m noch \033[32m>>$i<< \033[31m Sekunden bis zum Calibre Programmende"
       sleep 1
       clear
-      funct_term_output
+      func_term_output
     done
     kill -15 $CALIBRE_PID
     return 0
