@@ -26,7 +26,7 @@ done
 func_progressbar
 if [ $ONLINE ]; then
       echo -e "\n\033[32m Oh Wunder! Habe ein Netzwerk gefunden. Verbinde über Interface $INTERFACE,
- was nicht heißt das es geht :-P";
+ was nicht heißt das es geht :-P\n";
       if [[ $stat_1 -eq 200 && $stat_2 -eq 200 ]]; then
 	  return 1
       elif [[ $stat_1 -eq !200 ]]; then

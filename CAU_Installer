@@ -104,7 +104,7 @@ func_progressbar()
               60)
                   echo -e -n " 100%" ;;
 	esac
-    sleep 0.05
+    sleep 0.07
     done
     echo -e "\e[m"
 }
@@ -119,7 +119,7 @@ func_check_dir
 
     if [ -w "$BIN" ]; then
 	echo -e "\n\033[1;34mDer Calibre-Autoupdater wird nun unter $UPDATER_INSTALL_LOCATION installiert...\e[m";
-	echo -e "\n\033[1;32mProgrammdatei wird nach $BIN kopiert\e[m"; sleep 3
+	echo -e "\n\033[1;32mProgrammdatei wird nach $BIN kopiert\e[m"
 	cp calibre-autoupdate $BIN
 	sed -i "s/_-INC-_/${INC//\//\/}/g" $BIN"calibre-autoupdate"
         sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate"
@@ -127,11 +127,11 @@ func_check_dir
 	sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"
 	chmod 755 $BIN/calibre-autoupdate
 	func_progressbar
-	echo -e "\n\033[1;32mDie Header-Dateien werden nach $INC kopiert\e[m"; sleep 3
+	echo -e "\n\033[1;32mDie Header-Dateien werden nach $INC kopiert\e[m"
 	cp calibre-autoupdate.h calibre-autoupdate_checks.h $INC
 	chmod 644 $INC/calibre-autoupdate.h $INC/calibre-autoupdate_checks.h
 	func_progressbar
-	echo -e "\n\033[1;32mDie Konfigurationsdatei wird nach $ETC kopiert\e[m"; sleep 3
+	echo -e "\n\033[1;32mDie Konfigurationsdatei wird nach $ETC kopiert\e[m"
 	cp calibre-autoupdate.conf $ETC
 	sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/g" $ETC"calibre-autoupdate.conf"
 	chmod 644 $ETC/calibre-autoupdate.conf
