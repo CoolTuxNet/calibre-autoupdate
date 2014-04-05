@@ -2,7 +2,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.12"
+VERSION="0.13"
 QUIET=0
 
 func_term_output () {
