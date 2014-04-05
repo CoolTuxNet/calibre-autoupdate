@@ -35,12 +35,11 @@ func_check_run_calibre () {
   do
     $NOTIFY "Um das Update installieren zu können, muss Calibre beendet werden. Calibre wird in einer Minute vom Update Service beendet. !!!Bitte speichere alle wichtigen Daten!!!"
     sleep 3
+    echo ""
     for (( i=60; i>0; i-- ));
     do
-      echo -e "\033[31m noch \033[32m>>$i<< \033[31m Sekunden bis zum Calibre Programmende"
+      echo -e -n "\033[31m noch \033[32m>>$i<< \033[31m Sekunden bis zum Calibre Programmende\r"
       sleep 1
-      clear
-      func_term_output
     done
     kill -15 $CALIBRE_PID
     return 0
@@ -50,7 +49,8 @@ func_check_run_calibre () {
 
 func_check_version () {
   #Ermitteln der letzten aktuell verfügbaren Version
-  LATEST_VERSION=`curl -s $CALIBRE_DOWNLOAD_PAGE | grep 'latest release of calibre' | sed 's/[^0-9.]*\([1-9]*[0-9]\.[1-9]*[0-9]\).*/\1/'`
+  #LATEST_VERSION=`curl -s $CALIBRE_DOWNLOAD_PAGE | grep 'latest release of calibre' | sed 's/[^0-9.]*\([1-9]*[0-9]\.[1-9]*[0-9]\).*/\1/'`
+  LATEST_VERSION=1.32
   #Ermitteln der aktuell installierten Version.
   CURRENT_VERSION=`calibre --version | sed 's/[^0-9.]*\([0-9.]*\).*/\1/'`
   return 0
