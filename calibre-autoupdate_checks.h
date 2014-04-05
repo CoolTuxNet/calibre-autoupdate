@@ -35,11 +35,7 @@ if [ $ONLINE ]; then
 	  return 3
       fi
 else
-<<<<<<< HEAD
-    echo -e "\033[31m Fehler!!! Sieh Dir die verdammte Desktop Benachrichtigung an!";
-=======
     echo -e "\n\033[31m Fehler!!! Bitte schau Dir die Desktop Benachrichtigung an!";
->>>>>>> devel
     return 4
 fi
 }
