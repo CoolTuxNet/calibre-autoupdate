@@ -61,3 +61,24 @@ func_vercomp () {            # Funktion zum Versionsvergleich
     done
     return 0
 }
+
+func_progressbar()
+{
+    echo -e -n $'\033[34m------------------------------------------------------------------------- 100%\r'
+    echo -e -n "\033[32m0% "
+    for ((i=0; i<61; i++)); do
+	echo -e -n "\033[32m="  
+	case $i in
+	      15)
+		  echo -e -n "25%" ;;
+              30)
+                  echo -e -n "50%" ;;
+              45)
+                  echo -e -n "75%" ;;
+              60)
+                  echo -e -n " 100%" ;;
+	esac
+    sleep 0.03
+    done
+    echo -e "\e[m"
+}

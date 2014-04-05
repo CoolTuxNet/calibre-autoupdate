@@ -95,15 +95,6 @@ source $INC/calibre-autoupdate.h
 source $INC/calibre-autoupdate_checks.h
 
 
-func_http_status_code () {
-  echo -e "\033[1;34m Hole Status Code von $CHECK_CALIBRE_DOWNLOAD_PAGE. Bitte warten.";
-  stat_1=$(curl -o /dev/null --silent --head --write-out '%{http_code}' $CHECK_CALIBRE_DOWNLOAD_PAGE)
-  echo -e "\033[32m Status Codes von $CHECK_CALIBRE_DOWNLOAD_PAGE erhalten";
-  echo -e "\033[1;34m Hole Status Code von $CHECK_DOWNLOAD_URL. Bitte warten.";
-  stat_2=$(curl -o /dev/null --silent --head --write-out '%{http_code}' $CHECK_DOWNLOAD_URL)
-  echo -e "\033[32m Status Codes von $CHECK_DOWNLOAD_URL erhalten";
-  return 0
-}
 
 func_term_output () {
   ## Beginne mit der Ausgbe ##
