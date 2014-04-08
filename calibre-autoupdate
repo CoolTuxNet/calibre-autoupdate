@@ -71,7 +71,14 @@
 #        Die Funktion Installation des Updaters wurde aufgeteilt in root_install und noroot_install
 #        Uninstall Funktion für den calibre-autoupdater mit gleichzeitiger nachfrage und eventueller
 #        deinstallation vom Calibre Programm
-#        Der Code wurde überarbeitet, die Dialoge verbessert, Ergebnisse von Funktionsaufrufen in Variablen geschrieben
+#        Der Code wurde überarbeitet, die Dialoge verbessert, Ergebnisse von Funktionsaufrufen in Variablen
+#        geschrieben
+#
+# v0.15  die Funktion Versionsvergleich wurde mit der Funktion zum auslesen der Vorhanden Version und der verfügbaren
+#        Version
+#        zusammen gelegt.
+#        der Installer kontrolliert ob am Installationsort des Updaters die Verzeichnisstrucktur /bin /include /etc
+#        vorhanden ist und wenn nicht legt er sie an.
 #
 # TODO	 Auslesen der Download URL von der Download Seite
 #        kontrolle ob alle benötigten programme für das skript vorhanden sind
@@ -125,7 +132,6 @@ CHECK_STATE_RESULT="$?"
 case "$CHECK_STATE_RESULT" in
     1)
 	func_check_version
-	func_vercomp $CURRENT_VERSION $LATEST_VERSION     # Funktion Versionvergleich
 	CHECK_VERCOMP_RESULT="$?"
 
 	case $CHECK_VERCOMP_RESULT in
