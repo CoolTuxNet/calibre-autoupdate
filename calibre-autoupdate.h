@@ -15,7 +15,6 @@ func_help ()
     echo "$PROGNAME -- Der Calibre! Linux Edition calibre-autoupdater (CAU)"
     echo ""
     echo "Options:"
-    echo "   -q, --quiet                  ohne Konsolenausgabe"
     echo "   -h, --help                   zeigt die Hilfe an"
     echo "   -V, --version                gibt die Programmversion aus"
     echo "   -c, --check                  kontrolliert ob benötigte Programme vorhanden sind"
@@ -30,39 +29,8 @@ func_version ()
     func_term_output
     echo "$PROGNAME: Der Calibre! autoupdater v$VERSION"
     echo "Leon Gaultier 2013-2014. Das Programm darf verteilt werden,"
-    echo "in der Hoffnung das es hilfreich ist, aber OHNR IRGENDEINE GARANTIE"
+    echo -e "in der Hoffnung das es hilfreich ist, aber OHNR IRGENDEINE GARANTIE\n"
 
-}
-
-func_vercomp () {            # Funktion zum Versionsvergleich
-    if [[ $1 == $2 ]]
-    then
-        return 0
-    fi
-    local IFS=.
-    local i ver1=($1) ver2=($2)
-    # fill empty fields in ver1 with zeros
-    for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
-    do
-        ver1[i]=0
-    done
-    for ((i=0; i<${#ver1[@]}; i++))
-    do
-        if [[ -z ${ver2[i]} ]]
-        then
-            # fill empty fields in ver2 with zeros
-            ver2[i]=0
-        fi
-        if ((10#${ver1[i]} > 10#${ver2[i]}))
-        then
-            return 1
-        fi
-        if ((10#${ver1[i]} < 10#${ver2[i]}))
-        then
-            return 2
-        fi
-    done
-    return 0
 }
 
 func_term_output () {
@@ -154,6 +122,6 @@ func_uninstall_calibre()
     else	     	     
 	sudo calibre-uninstall
     fi
-  echo -e "\n\n\033[1;32mCalibre würde DeInstalliert! Schade es ist ein tolles Programm zur eBookverwaltung :-)\e[m"
+  echo -e "\n\033[1;32mCalibre würde DeInstalliert! Schade es ist ein tolles Programm zur eBookverwaltung :-)\n\e[m"
   return 0
 }

@@ -62,8 +62,8 @@
 #        !!! Das ist die erste Version welche eine reibungslose Installation und einen reibungslosen
 #        betrieb unter allen Linuxvarianten ermöglicht !!!
 #
-# v0.13  Es wurden diverse Fehler bei eigentlichen Updateprozess bereinigt. Desweiteren wurden größere
-#        in kleine geteilt.
+# v0.13  Es wurden diverse Fehler beim eigentlichen Updateprozess bereinigt. Desweiteren wurden größere
+#        Prozesse in kleine aufgeteilt.
 #
 # v0.14  Uninstallfunktion für Calibre hinzugefügt. Hiermit kann Calibre von der Festplatte deinstalliert werden.
 #        Bei einer nicht vorhandenen Calibreinstallation wird vom Installsript des Updaters gefragt, ob Calibre
@@ -71,6 +71,7 @@
 #        Die Funktion Installation des Updaters wurde aufgeteilt in root_install und noroot_install
 #        Uninstall Funktion für den calibre-autoupdater mit gleichzeitiger nachfrage und eventueller
 #        deinstallation vom Calibre Programm
+#        Der Code wurde überarbeitet, die Dialoge verbessert, Ergebnisse von Funktionsaufrufen in Variablen geschrieben
 #
 # TODO	 Auslesen der Download URL von der Download Seite
 #        kontrolle ob alle benötigten programme für das skript vorhanden sind
@@ -119,15 +120,15 @@ NOTIFY="echo"
 
 func_term_output    # ruft die Funktion für Konsolenausgabe auf
 func_check_stat  # ruft die Funktion "check Status Netzwerk und Downloadadressen" auf
+CHECK_STATE_RESULT="$?"
 
-case "$?" in
+case "$CHECK_STATE_RESULT" in
     1)
-       func_check_version
-       CHECK_STATE_RESULT="$1"
-echo $CHECK_STATE_RESULT
-sleep 1000
-       func_vercomp $CURRENT_VERSION $LATEST_VERSION     # Funktion Versionvergleich
-       case $CHECK_STATE_RESULT in
+	func_check_version
+	func_vercomp $CURRENT_VERSION $LATEST_VERSION     # Funktion Versionvergleich
+	CHECK_VERCOMP_RESULT="$?"
+
+	case $CHECK_VERCOMP_RESULT in
 	   0) 
 	     $NOTIFY "Deine Calibre Version ist auf dem aktuellsten Stand ($CURRENT_VERSION).";;
 	   1) 
@@ -139,12 +140,12 @@ sleep 1000
 	     
 	     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
 		$NOTIFY "Das Update wird nun installiert..."
-	        echo -e "\033[34m"
+	        echo -e "\e[m"
 	        wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
 	     else	     	     
 		$NOTIFY "Du hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Das Update wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
-		echo -e "\033[34m"
-		sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"	
+		echo -e "\e[m"
+		sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
 	     fi
 	     $NOTIFY "Calibre wurde auf die neuste Version aktuallisiert." 
 	     ;;

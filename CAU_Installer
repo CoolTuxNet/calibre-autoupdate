@@ -18,7 +18,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.13.98"
+VERSION="0.14"
 
 ##### Variablen deklaration #####
 # Downloadseite der Linuxinstallation
@@ -62,7 +62,7 @@ func_version ()  # Versionsauskunft des Installers
     func_term_output
     echo "$PROGNAME: Der Calibre-Autoupdate-Installer (CAUI) v$VERSION"
     echo "Leon Gaultier 2013-2014. Das Programm darf verteilt werden,"
-    echo "in der Hoffnung das es hilfreich ist, aber OHNR IRGENDEINE GARANTIE"
+    echo -e "in der Hoffnung das es hilfreich ist, aber OHNR IRGENDEINE GARANTIE\n"
 
 }
 
@@ -156,7 +156,7 @@ func_install_noroot()
 # Die sed Befehle ersetzen in den Programmdateien Platzhalter für den Installationsort.
 # Grund hierfür sind die includes der Header unf Configfiles die den kompletten Fad benörigen
 	echo -e "\n\033[1;34mDer Calibre-Autoupdater wird nun unter $UPDATER_INSTALL_LOCATION installiert...\e[m";
-	echo -e "\033[1;32mProgrammdatei wird nach $BIN kopiert\e[m"
+	echo -e "\033[1;32mProgramm-Dateien wird nach $BIN kopiert\e[m"
 	cp calibre-autoupdate $BIN
         sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate" 
 	sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"
@@ -166,7 +166,7 @@ func_install_noroot()
 	cp calibre-autoupdate.h calibre-autoupdate_checks.h $INC
 	chmod 644 $INC/calibre-autoupdate.h $INC/calibre-autoupdate_checks.h
 	func_progressbar
-	echo -e "\n\033[1;32mDie Konfigurationsdatei wird nach $ETC kopiert\e[m"
+	echo -e "\n\033[1;32mDie Konfigurations-Dateien wird nach $ETC kopiert\e[m"
 	cp calibre-autoupdate.conf $ETC
 	sed -i "s/_-INC-_/${INC//\//\/}/g" $ETC"calibre-autoupdate.conf"
 	sed -i "s/_-BIN-_/${BIN//\//\/}/g" $ETC"calibre-autoupdate.conf"
@@ -180,7 +180,7 @@ func_install_root()
 # Die sed Befehle ersetzen in den Programmdateien Platzhalter für den Installationsort.
 # Grund hierfür sind die includes der Header unf Configfiles die den kompletten Fad benörigen
 	echo -e "\n\033[1;34mDu hast kein Schreibrecht auf $UPDATER_INSTALL_LOCATION, daher wird SUDO versucht zu verwenden...\e[m";
-	sudo echo -e "\033[1;36mProgrammdatei wird nach $BIN kopiert\e[m\e[m"
+	sudo echo -e "\033[1;36mProgramm-Dateien wird nach $BIN kopiert\e[m\e[m"
         sudo cp calibre-autoupdate $BIN	
 	sudo sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate"
 	sudo sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"
@@ -190,7 +190,7 @@ func_install_root()
 	sudo cp calibre-autoupdate.h calibre-autoupdate_checks.h $INC
 	sudo chmod 644 $INC"calibre-autoupdate.h" $INC"calibre-autoupdate_checks.h"
 	func_progressbar
-	echo -e "\n\033[1;36mDie Konfigurationsdatei wird nach $ETC kopiert\e[m"
+	echo -e "\n\033[1;36mDie Konfigurations-Dateien wird nach $ETC kopiert\e[m"
 	sudo cp calibre-autoupdate.conf $ETC
 	sudo sed -i "s/_-INC-_/${INC//\//\/}/g" $ETC"calibre-autoupdate.conf"
 	sudo sed -i "s/_-BIN-_/${BIN//\//\/}/g" $ETC"calibre-autoupdate.conf"
@@ -227,7 +227,7 @@ func_install_calibre()
     echo -e "\033[1;32mCalibre wird nun installiert...\n\e[m"
     wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
   else	     	     
-    echo -e "\033[1;34mDu hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Calibre wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort ein...\n\033[1;32m"
+    echo -e "\033[1;34mDu hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Calibre wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort ein...\n\e[m"
     sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
   fi
   echo -e "\n\n\033[1;36mHerzlichen Glückwunsch. Calibre wurde installiert und kann nun mit "calibre" verwendet werden.\n\033[0m"
