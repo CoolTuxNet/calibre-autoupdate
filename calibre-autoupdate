@@ -61,22 +61,31 @@
 #        Es wurden diverse Ausgabentexte sprachlich verbessert und Fehler beseitigt.
 #        !!! Das ist die erste Version welche eine reibungslose Installation und einen reibungslosen
 #        betrieb unter allen Linuxvarianten ermöglicht !!!
-# TODO	auslesen der Download URL von der Download Seite
-#       kontrolle ob alle benötigten programme für das skript vorhanden sind
+#
+# v0.13  Es wurden diverse Fehler bei eigentlichen Updateprozess bereinigt. Desweiteren wurden größere
+#        in kleine geteilt.
+#
+# v0.14  Uninstallfunktion für Calibre hinzugefügt. Hiermit kann Calibre von der Festplatte deinstalliert werden.
+#        Bei einer nicht vorhandenen Calibreinstallation wird vom Installsript des Updaters gefragt, ob Calibre
+#        installiert werden soll.
+#        Die Funktion Installation des Updaters wurde aufgeteilt in root_install und noroot_install
+#        Uninstall Funktion für den calibre-autoupdater mit gleichzeitiger nachfrage und eventueller
+#        deinstallation vom Calibre Programm
+#
+# TODO	 Auslesen der Download URL von der Download Seite
+#        kontrolle ob alle benötigten programme für das skript vorhanden sind
 #
 #
 ######################################
 ######################################
 
 # Installationsfade in der Verzeichnishierarchie
-INC=_-INC-_
 ETC=_-ETC-_
-BIN=_-BIN-_
+
 
 # Programmversion
 PROGNAME=`basename $0`
 VERSION="_-VERSION-_"
-QUIET=0
 
 #################################
 ######### CONFIGURATION #########
@@ -84,7 +93,8 @@ QUIET=0
 # bis Veränderungen auf der Internetseite durchgeführt wurden
 #################################
 
-# Einlesen des Configfiles mit den Constanten für die Calibre Downloadseite und Hauptseite
+# Einlesen des Configfiles mit den Variablen für die Calibre Downloadseite, Hauptseite
+# und den Installationsfaden in der Verzeichnishierarchie
 source $ETC/calibre-autoupdate.conf
 
 
@@ -95,13 +105,6 @@ source $INC/calibre-autoupdate.h
 source $INC/calibre-autoupdate_checks.h
 
 
-
-func_term_output () {
-  ## Beginne mit der Ausgbe ##
-  tty -s && clear
-  echo -e "\033[44m \033[0m\033[1m $PROGNAME Version $VERSION\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n";
-  return 0
-}
 
 
 #######################################################
@@ -114,17 +117,17 @@ NOTIFY="echo"
 [ -n "$DISPLAY" ] && NOTIFY="notify-send -t 10000 -i /usr/share/icons/hicolor/256x256/apps/calibre-gui.png Calibre-Auto-Updater"
 
 
-func_term_output    # Funktion für Konsolenausgabe
+func_term_output    # ruft die Funktion für Konsolenausgabe auf
+func_check_stat  # ruft die Funktion "check Status Netzwerk und Downloadadressen" auf
 
-func_http_status_code	# Funktion hole einen http-status code
-
-func_check_stat  # Funktion check Status Netzwerk und Downloadadressen
-
-case $? in
+case "$?" in
     1)
        func_check_version
+       CHECK_STATE_RESULT="$1"
+echo $CHECK_STATE_RESULT
+sleep 1000
        func_vercomp $CURRENT_VERSION $LATEST_VERSION     # Funktion Versionvergleich
-       case $? in
+       case $CHECK_STATE_RESULT in
 	   0) 
 	     $NOTIFY "Deine Calibre Version ist auf dem aktuellsten Stand ($CURRENT_VERSION).";;
 	   1) 
@@ -136,11 +139,11 @@ case $? in
 	     
 	     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
 		$NOTIFY "Das Update wird nun installiert..."
-	        echo -e "\033[1;34m"
+	        echo -e "\033[34m"
 	        wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
 	     else	     	     
 		$NOTIFY "Du hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Das Update wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
-		echo -e "\033[1;34m"
+		echo -e "\033[34m"
 		sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"	
 	     fi
 	     $NOTIFY "Calibre wurde auf die neuste Version aktuallisiert." 
@@ -158,6 +161,7 @@ case $? in
     $NOTIFY "Update und Versionsvergleich fehlgeschlagen!!! Kann kein Netzwerkinterface finden!"
     ;;
 esac
+echo -e "\e[m"
 }
 
 while test "$#" -gt 0
@@ -171,18 +175,20 @@ do
   esac
 
   case "$arg" in
-      --quiet | -q )
-	  QUIET=1 ;;
       --help | -h )
 	  func_help; exit 0 ;;
       --version | -V | -v )
 	  func_version; exit 0 ;;
       --check | -C | -c )
 	  func_check_prog; exit 0 ;;
+      --uninstall | -U | -u )
+	  func_uninstall; exit 0;;
+      --uninstall_calibre )
+	  func_uninstall_calibre; exit 0 ;;
   esac
 
 done
 func_check_prog
 func_update
-
+echo -e "\e[m"
 exit 0

@@ -1,19 +1,43 @@
 #!/bin/bash
+#  Calibre Auto Updater Installscript
+#    Copyright (C) 2013-2014  Leon Gaultier
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
+
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.13"
-QUIET=0
+VERSION="0.13.98"
 
-func_term_output () {
+##### Variablen deklaration #####
+# Downloadseite der Linuxinstallation
+DOWNLOAD_URL=https://github.com/kovidgoyal/calibre/raw/master/setup/linux-installer.py
+
+#################################
+
+
+
+func_term_output () {			# einheitliche Terminalausgabe
   ## Beginne mit der Ausgbe ##
   tty -s && clear
-  echo -e "\033[44m \033[0m\033[1m $PROGNAME the Calibre-Autoupdate-Installer Version $VERSION\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n";
+  echo -e "\033[44m \033[0m\033[1m $PROGNAME the Calibre-Autoupdate-Installer Version $VERSION\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n\e[m";
   return 0
 }
 
 func_usage ()    # Gibt Auskunft über Verwendung des Scriptes
 {
+    func_term_output
     echo "Verwendung: $PROGNAME [OPTION...]"
     echo -e "Verwende $PROGNAME --help oder $PROGNAME -h für mehr Informationen.\n"
 }
@@ -25,17 +49,17 @@ func_help ()     # Listet alle Optionsschalter auf
     echo "$PROGNAME -- Der Calibre-Autoupdate-Installer (CAUI)"
     echo ""
     echo "Options:"
-    echo "   -q, --quiet           ohne Konsolenausgabe"
-    echo "   -h, --help            zeigt die Hilfe an"
-    echo "   -V, --version         gibt die Programmversion aus"
-    echo "   -i, --install         installiert den Calibre-Autoupdater (CAU)"
-    #echo "   -u, --uninstall       deinstalliert den Calibre-Autoupdater (CAU), soll kommen "
+    echo "   -h, --help              zeigt die Hilfe an"
+    echo "   -V, --version           gibt die Programmversion aus"
+    echo "   -i, --install           installiert den Calibre-Autoupdater (CAU)"
+    echo "       --install_calibre   installiert Calibre in der aktuellsten Version"
     echo ""
     echo -e "Sende Fehler an <leongaultier@gmail.com>.\n";
 }
 
 func_version ()  # Versionsauskunft des Installers
 {
+    func_term_output
     echo "$PROGNAME: Der Calibre-Autoupdate-Installer (CAUI) v$VERSION"
     echo "Leon Gaultier 2013-2014. Das Programm darf verteilt werden,"
     echo "in der Hoffnung das es hilfreich ist, aber OHNR IRGENDEINE GARANTIE"
@@ -54,8 +78,7 @@ read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INS
   if [ -z $CALIBRE_INSTALL_LOCATION ]; then
       CALIBRE_INSTALL_LOCATION=/opt      
   fi
-
-# Installationsfade in der Verzeichnishierarchie
+# Verzeichnishierarchie im Installationsort
 INC=$UPDATER_INSTALL_LOCATION/include/
 ETC=$UPDATER_INSTALL_LOCATION/etc/
 BIN=$UPDATER_INSTALL_LOCATION/bin/
@@ -64,8 +87,27 @@ BIN=$UPDATER_INSTALL_LOCATION/bin/
 func_check_dir()  # Install oder Update Calibre Updater, Check ob Calibre überhaupt installiert ist
 {
     if test ! -d $CALIBRE_INSTALL_LOCATION/calibre ; then
-        echo -e "\n\033[31mKeine Calibre Installation unter $CALIBRE_INSTALL_LOCATION gefunden. Installation des Updaters nicht möglich.\e[m\n"; >&2
-        exit 1
+        echo -e "\n\033[31mKeine Calibre Installation unter $CALIBRE_INSTALL_LOCATION gefunden.\033[1;34m"
+	while ((!gueltig)); do    # beginn der Ja/Nein Abfrage
+	echo -e "\033[1;34m"
+	read -sn1 -t 30 -p "Möchtest Du Calibre jetzt installieren? [j/n] " answer
+	echo -e "\e[m"
+	  case "$answer" in
+	      [JjYy])    result=1; gueltig=1 ;;
+	      [Nn])      result=0; gueltig=1 ;;
+	      "")        result=0; gueltig=1 ;;
+	      *)         gueltig=0 ;;
+	  esac
+	done
+	echo
+	if (( ! result )); then
+	    echo -e "\n\033[1;31mDie installation des Calibre-Autoupdaters wurde durch Dich abgebrochen.\e[m\n"
+	    exit 1  
+	fi
+	echo -e "\033[1;34mNach der Calibre Installation wird die Installation des Calibre Autoupdaters durchgeführt\e[m"
+	sleep 3
+        func_install_calibre
+        exit 0
     fi
 
     if test -f $BIN/calibre-autoupdate ; then  # Updater bereits installiert?
@@ -82,7 +124,7 @@ func_check_dir()  # Install oder Update Calibre Updater, Check ob Calibre überh
 	done
 	echo
 	if (( ! result )); then
-	    echo -e "\n\033[1;31mDie installation des Calibre-Autoupdaters wurde durch Dich beendet.\e[m\n"
+	    echo -e "\n\033[1;31mDie installation des Calibre-Autoupdaters wurde durch Dich abgebrochen.\e[m\n"
 	    exit 1  
 	fi
     fi
@@ -92,7 +134,7 @@ func_progressbar()
 {
     echo -e -n $'\033[34m------------------------------------------------------------------------- 100%\r'
     echo -e -n "\033[32m0% "
-    for ((i=0; i<61; i++)); do
+    for ((i=0; i<61; i++)); do	
 	echo -e -n "\033[32m="  
 	case $i in
 	      15)
@@ -109,21 +151,14 @@ func_progressbar()
     echo -e "\e[m"
 }
 
-func_install()    # Installiert den Calibre Updater
+func_install_noroot()
 {
-func_term_output
-func_change_install_dir  
-func_check_dir
-
-# Ersetzen der Platzhaltervatiablen für die Installationsverzeichnisvariablen
-
-    if [ -w "$BIN" ]; then
+# Die sed Befehle ersetzen in den Programmdateien Platzhalter für den Installationsort.
+# Grund hierfür sind die includes der Header unf Configfiles die den kompletten Fad benörigen
 	echo -e "\n\033[1;34mDer Calibre-Autoupdater wird nun unter $UPDATER_INSTALL_LOCATION installiert...\e[m";
-	echo -e "\n\033[1;32mProgrammdatei wird nach $BIN kopiert\e[m"
+	echo -e "\033[1;32mProgrammdatei wird nach $BIN kopiert\e[m"
 	cp calibre-autoupdate $BIN
-	sed -i "s/_-INC-_/${INC//\//\/}/g" $BIN"calibre-autoupdate"
-        sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate"
-        sed -i "s/_-BIN-_/${BIN//\//\/}/g" $BIN"calibre-autoupdate"
+        sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate" 
 	sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"
 	chmod 755 $BIN/calibre-autoupdate
 	func_progressbar
@@ -133,17 +168,21 @@ func_check_dir
 	func_progressbar
 	echo -e "\n\033[1;32mDie Konfigurationsdatei wird nach $ETC kopiert\e[m"
 	cp calibre-autoupdate.conf $ETC
+	sed -i "s/_-INC-_/${INC//\//\/}/g" $ETC"calibre-autoupdate.conf"
+	sed -i "s/_-BIN-_/${BIN//\//\/}/g" $ETC"calibre-autoupdate.conf"
 	sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/g" $ETC"calibre-autoupdate.conf"
 	chmod 644 $ETC/calibre-autoupdate.conf
 	func_progressbar
-	
-    else	     	     
+}
+
+func_install_root()
+{
+# Die sed Befehle ersetzen in den Programmdateien Platzhalter für den Installationsort.
+# Grund hierfür sind die includes der Header unf Configfiles die den kompletten Fad benörigen
 	echo -e "\n\033[1;34mDu hast kein Schreibrecht auf $UPDATER_INSTALL_LOCATION, daher wird SUDO versucht zu verwenden...\e[m";
-	sudo echo -e "\n\033[1;36mProgrammdatei wird nach $BIN kopiert\e[m\e[m"
-        sudo cp calibre-autoupdate $BIN
-	sudo sed -i "s/_-INC-_/${INC//\//\/}/g" $BIN"calibre-autoupdate"
+	sudo echo -e "\033[1;36mProgrammdatei wird nach $BIN kopiert\e[m\e[m"
+        sudo cp calibre-autoupdate $BIN	
 	sudo sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate"
-	sudo sed -i "s/_-BIN-_/${BIN//\//\/}/g" $BIN"calibre-autoupdate"
 	sudo sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"
 	sudo chmod 755 $BIN"calibre-autoupdate"
 	func_progressbar
@@ -153,18 +192,47 @@ func_check_dir
 	func_progressbar
 	echo -e "\n\033[1;36mDie Konfigurationsdatei wird nach $ETC kopiert\e[m"
 	sudo cp calibre-autoupdate.conf $ETC
+	sudo sed -i "s/_-INC-_/${INC//\//\/}/g" $ETC"calibre-autoupdate.conf"
+	sudo sed -i "s/_-BIN-_/${BIN//\//\/}/g" $ETC"calibre-autoupdate.conf"
 	sudo sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/g" $ETC"calibre-autoupdate.conf"
 	sudo chmod 644 $ETC"calibre-autoupdate.conf";
 	func_progressbar
+}
+
+func_install_process()    # Installiert den Calibre Updater
+{
+func_term_output
+func_change_install_dir  
+func_check_dir
+
+    if [ -w "$BIN" ]; then
+	func_install_noroot
+    else	     	     
+	func_install_root
     fi
-    echo -e "\n\n\n\033[1;36mDer Calibre-Autoupdater wurde erfolgreich installiert und"
+    echo -e "\n\n\033[1;36mDer Calibre-Autoupdater wurde erfolgreich installiert und"
     echo -e "kann nun mit calibre-update oder $BIN"calibre-update" aufgerufen werden\e[m\n"
 }
 
-func_uninstall()
+func_install_calibre()
 {
-echo
-# ist geplant
+  if [ ! $CALIBRE_INSTALL_LOCATION ]; then
+    func_term_output
+    read -p "Wohin soll Calibre installiert werden? [default /opt] " CALIBRE_INSTALL_LOCATION
+  fi
+  if [ -z $CALIBRE_INSTALL_LOCATION ]; then
+      CALIBRE_INSTALL_LOCATION=/opt      
+  fi  
+  if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
+    echo -e "\033[1;32mCalibre wird nun installiert...\n\e[m"
+    wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
+  else	     	     
+    echo -e "\033[1;34mDu hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Calibre wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort ein...\n\033[1;32m"
+    sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
+  fi
+  echo -e "\n\n\033[1;36mHerzlichen Glückwunsch. Calibre wurde installiert und kann nun mit "calibre" verwendet werden.\n\033[0m"
+  sleep 5
+  func_install_process
 }
 
 while test "$#" -gt 0
@@ -178,19 +246,18 @@ do
   esac
 
   case "$arg" in
-      --quiet | -q )
-	  QUIET=1 ;;
       --help | -h )
 	  func_help; exit 0 ;;
       --version | -V | -v )
 	  func_version; exit 0 ;;
-      --install | -i )
-	  func_install; exit 0 ;;
-      --uninstall | -u )
-	  func_uninstall; exit 0;;
+      --install | -i | -I )
+	  func_install_process; exit 0 ;;
+      --install_calibre )
+	  func_install_calibre; exit 0
   esac
 
 done
 func_term_output
 func_usage
+echo -e "\e[m"
 exit 0
