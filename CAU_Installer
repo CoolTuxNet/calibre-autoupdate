@@ -18,7 +18,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.14.99.1"
+VERSION="0.14.99.2"
 
 ##### Variablen deklaration #####
 # Downloadseite der Linuxinstallation
@@ -101,18 +101,25 @@ func_check_dir_structur()
 	done
 	echo
 	if (( ! result )); then
-	    echo -e "\n\033[1;31mBitte Entschuldige, aber die Installation des Calibre-Autoupdaters"
-	    echo -e "konnte nicht zu Ende geführt werden.\e[m\n"
-	    exit 2
+	    echo -e "\n\033[1;31mBite wähle einen anderen Ort für die Installation aus. Es muß zwingend die"
+	    echo -e "Verzeichnisstruktur /etc; /bin; /include vorhanden sein, oder angelegt werden\e[m\n"
+	    func_install_process
 	fi
 	echo -e "\033[1;34mDas Verzeichnis wird angelegt!\e[m"
   }
   
-if [ ! -d $BIN ]
+if [ ! -d $BIN ]; then
   echo -e "\033[1;34mEs konnte im Installationsort kein /bin Verzeichnis gefunden werden"
-  
+  func_selection_query
 fi
-
+if [ ! -d $ETC ]; then
+  echo -e "\033[1;34mEs konnte im Installationsort kein /etc Verzeichnis gefunden werden"
+  func_selection_query
+fi
+if [ ! -d $INC ]; then
+  echo -e "\033[1;34mEs konnte im Installationsort kein /include Verzeichnis gefunden werden"
+  func_selection_query
+fi
 }
 
 func_check_calibre_install()  # Install oder Update Calibre Updater, Check ob Calibre überhaupt installiert ist
@@ -233,10 +240,11 @@ func_install_root()
 func_install_process()    # Installiert den Calibre Updater
 {
 func_term_output
-func_change_install_dir  
+func_change_install_dir
+func_check_dir_structur
 func_check_calibre_install
 
-    if [ -w "$BIN" ]; then
+    if [ -w "$UPDATER_INSTALL_LOCATION" ]; then
 	func_install_noroot
     else	     	     
 	func_install_root
