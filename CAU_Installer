@@ -205,7 +205,7 @@ func_term_output
 func_change_install_dir  
 func_check_dir
 
-    if [ -w "$BIN" ]; then
+    if [ -w "$UPDATER_INSTALL_LOCATION" ]; then
 	func_install_noroot
     else	     	     
 	func_install_root
