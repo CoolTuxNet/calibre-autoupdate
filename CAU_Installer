@@ -18,7 +18,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.14.99.2"
+VERSION="0.14.99.3"
 
 ##### Variablen deklaration #####
 # Downloadseite der Linuxinstallation
@@ -32,7 +32,7 @@ func_term_output () {			# einheitliche Terminalausgabe
   ## Beginne mit der Ausgbe ##
   tty -s && clear
   echo -e "\033[44m \033[0m\033[1m $PROGNAME the Calibre-Autoupdate-Installer Version $VERSION\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n\e[m";
-  return 0
+return 0
 }
 
 func_usage ()    # Gibt Auskunft über Verwendung des Scriptes
@@ -40,6 +40,7 @@ func_usage ()    # Gibt Auskunft über Verwendung des Scriptes
     func_term_output
     echo "Verwendung: $PROGNAME [OPTION...]"
     echo -e "Verwende $PROGNAME --help oder $PROGNAME -h für mehr Informationen.\n"
+return 0
 }
 
 func_help ()     # Listet alle Optionsschalter auf
@@ -54,7 +55,8 @@ func_help ()     # Listet alle Optionsschalter auf
     echo "   -i, --install           installiert den Calibre-Autoupdater (CAU)"
     echo "       --install_calibre   installiert Calibre in der aktuellsten Version"
     echo ""
-    echo -e "Sende Fehler an <leongaultier@gmail.com>.\n";
+    echo -e "Sende Fehler an <leongaultier@gmail.com>.\n"
+return 0
 }
 
 func_version ()  # Versionsauskunft des Installers
@@ -63,25 +65,64 @@ func_version ()  # Versionsauskunft des Installers
     echo "$PROGNAME: Der Calibre-Autoupdate-Installer (CAUI) v$VERSION"
     echo "Leon Gaultier 2013-2014. Das Programm darf verteilt werden,"
     echo -e "in der Hoffnung das es hilfreich ist, aber OHNR IRGENDEINE GARANTIE\n"
-
+return 0
 }
 
 func_change_install_dir()   # Funktion zur Abfrage des Installationsortes
 {
-read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local] " UPDATER_INSTALL_LOCATION
+  read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local] " UPDATER_INSTALL_LOCATION
   
   if [ -z $UPDATER_INSTALL_LOCATION ]; then
-      UPDATER_INSTALL_LOCATION=/usr/local      
+      UPDATER_INSTALL_LOCATION=/usr/local
   fi
-read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
+  if [ ! -d $UPDATER_INSTALL_LOCATION ]; then
+      echo -e "\n\033[1;31mDas von Dir angegebene Installationsverzeichnis $UPDATER_INSTALL_LOCATION existiert nicht\e[m"
+      while ((!gueltig)); do    # beginn der Ja/Nein Abfrage
+	  echo -e "\033[1;34m"
+	  read -sn1 -t 30 -p "Möchtest Du einen neuen Installationsort angeben? [j/n] " answer
+	  echo -e "\e[m"
+      case "$answer" in
+	  [JjYy])    result=1; gueltig=1 ;;
+	  [Nn])      result=0; gueltig=1 ;;
+	  "")        result=0; gueltig=1 ;;
+	  *)         gueltig=0 ;;
+      esac
+      done
+      if (( ! result )); then
+	echo -e "\n\033[1;31mDie Installation wurde durch Dich ebgebrochen\e[m\n"
+	exit 1
+      fi
+      func_change_install_dir; return 0
+  fi
+  read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
   
   if [ -z $CALIBRE_INSTALL_LOCATION ]; then
       CALIBRE_INSTALL_LOCATION=/opt      
   fi
-# Verzeichnishierarchie im Installationsort
-INC=$UPDATER_INSTALL_LOCATION/include/
-ETC=$UPDATER_INSTALL_LOCATION/etc/
-BIN=$UPDATER_INSTALL_LOCATION/bin/
+  if [ ! -d $CALIBRE_INSTALL_LOCATION ]; then
+      echo -e "\n\033[1;31mDas Calibre Installationsverzeichnis $CALIBRE_INSTALL_LOCATION existiert nicht\e[m"
+      while ((!gueltig)); do    # beginn der Ja/Nein Abfrage
+	  echo -e "\033[1;34m"
+	  read -sn1 -t 30 -p "Sicherlich hast Du Dich verschrieben. Möchtest Du es erneut versuchen? [j/n] " answer
+	  echo -e "\e[m"
+      case "$answer" in
+	  [JjYy])    result=1; gueltig=1 ;;
+	  [Nn])      result=0; gueltig=1 ;;
+	  "")        result=0; gueltig=1 ;;
+	  *)         gueltig=0 ;;
+      esac
+      done
+      if (( ! result )); then
+	echo -e "\n\033[1;31mDie Installation wurde durch Dich ebgebrochen\e[m\n"
+	exit 1
+      fi
+      func_change_install_dir; return 0
+  fi
+  # Verzeichnishierarchie im Installationsort
+  INC=$UPDATER_INSTALL_LOCATION/include/
+  ETC=$UPDATER_INSTALL_LOCATION/etc/
+  BIN=$UPDATER_INSTALL_LOCATION/bin/
+return 0
 }
 
 func_selection_query()
@@ -97,12 +138,12 @@ func_selection_query()
 	*)         gueltig=0 ;;
     esac
     done
-    echo
     if (( ! result )); then
 	echo -e "\n\033[1;31mBite wähle einen anderen Ort für die Installation aus. Es muß zwingend die"
 	echo -e "Verzeichnisstruktur /etc; /bin; /include vorhanden sein, oder angelegt werden\e[m\n"
-	func_install_process
+	exit 1
     fi
+return 0
 }
 
 func_check_dir_structur()
@@ -114,8 +155,8 @@ func_check_dir_structur()
 	 echo -e "Du hast kein Schreibrecht auf $UPDATER_INSTALL_LOCATION. Es wird SUDO verwendet!"
 	 sudo mkdir $BIN
       fi
-  mkdir $BIN
-  echo "Das Verzeichniss $BIN wurde unter $UPDATER_INSTALL_LOCATION angelegt"
+      mkdir $BIN
+      echo "Das Verzeichniss $BIN wurde angelegt"
   fi
   
   if [ ! -d $ETC ]; then
@@ -125,11 +166,10 @@ func_check_dir_structur()
 	  echo -e "Du hast kein Schreibrecht auf $UPDATER_INSTALL_LOCATION. Es wird SUDO verwendet!"
 	  sudo mkdir $ETC
       fi
-  mkdir $ETC
-  echo "Das Verzeichniss $ETC wurde unter $UPDATER_INSTALL_LOCATION angelegt"
+      mkdir $ETC
+      echo "Das Verzeichniss $ETC wurde unter $UPDATER_INSTALL_LOCATION angelegt"
   fi
-  
- 
+return 0
 }
 
 func_check_calibre_install()  # Install oder Update Calibre Updater, Check ob Calibre überhaupt installiert ist
@@ -147,7 +187,7 @@ func_check_calibre_install()  # Install oder Update Calibre Updater, Check ob Ca
 	      *)         gueltig=0 ;;
 	  esac
 	done
-	echo
+	#echo
 	if (( ! result )); then
 	    echo -e "\n\033[1;31mDie installation des Calibre-Autoupdaters wurde durch Dich abgebrochen.\e[m\n"
 	    exit 1  
@@ -155,7 +195,7 @@ func_check_calibre_install()  # Install oder Update Calibre Updater, Check ob Ca
 	echo -e "\033[1;34mNach der Calibre Installation wird die Installation des Calibre Autoupdaters durchgeführt\e[m"
 	sleep 3
         func_install_calibre
-        exit 0
+        
     fi
 
     if test -f $BIN/calibre-autoupdate ; then  # Updater bereits installiert?
@@ -170,7 +210,7 @@ func_check_calibre_install()  # Install oder Update Calibre Updater, Check ob Ca
 	      *)         gueltig=0 ;;
 	  esac
 	done
-	echo
+	#echo
 	if (( ! result )); then
 	    echo -e "\n\033[1;31mDie installation des Calibre-Autoupdaters wurde durch Dich abgebrochen.\e[m\n"
 	    exit 1  
@@ -253,6 +293,8 @@ func_term_output
 func_change_install_dir
 func_check_dir_structur
 func_check_calibre_install
+echo "Rausgeflogen"
+sleep 1000
 
     if [ -w "$UPDATER_INSTALL_LOCATION" ]; then
 	func_install_noroot
