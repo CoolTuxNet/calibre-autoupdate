@@ -90,7 +90,7 @@ func_change_install_dir()   # Funktion zur Abfrage des Installationsortes
       done
       if (( ! result )); then
 	echo -e "\n\033[1;31mDie Installation wurde durch Dich ebgebrochen\e[m\n"
-	exit 1
+	exit 0
       fi
       func_change_install_dir; return 0
   fi
@@ -114,7 +114,7 @@ func_change_install_dir()   # Funktion zur Abfrage des Installationsortes
       done
       if (( ! result )); then
 	echo -e "\n\033[1;31mDie Installation wurde durch Dich ebgebrochen\e[m\n"
-	exit 1
+	exit 0
       fi
       func_change_install_dir; return 0
   fi
@@ -122,53 +122,6 @@ func_change_install_dir()   # Funktion zur Abfrage des Installationsortes
   INC=$UPDATER_INSTALL_LOCATION/include/
   ETC=$UPDATER_INSTALL_LOCATION/etc/
   BIN=$UPDATER_INSTALL_LOCATION/bin/
-return 0
-}
-
-func_selection_query()
-{
-  while ((!gueltig)); do    # beginn der Ja/Nein Abfrage
-    echo -e "\033[1;34m"
-    read -sn1 -t 30 -p "Soll das Verzeichnis angelegt werden? [j/n] " answer
-    echo -e "\e[m"
-    case "$answer" in
-	[JjYy])    result=1; gueltig=1 ;;
-	[Nn])      result=0; gueltig=1 ;;
-	"")        result=0; gueltig=1 ;;
-	*)         gueltig=0 ;;
-    esac
-    done
-    if (( ! result )); then
-	echo -e "\n\033[1;31mBite wähle einen anderen Ort für die Installation aus. Es muß zwingend die"
-	echo -e "Verzeichnisstruktur /etc; /bin; /include vorhanden sein, oder angelegt werden\e[m\n"
-	exit 1
-    fi
-return 0
-}
-
-func_check_dir_structur()
-{
-  if [ ! -d $BIN ]; then
-  echo -e "\033[1;34mEs konnte unter $UPDATER_INSTALL_LOCATION kein /bin Verzeichnis gefunden werden"
-  func_selection_query
-      if [ ! -w $UPDATER_INSTALL_LOCATION ]; then
-	 echo -e "Du hast kein Schreibrecht auf $UPDATER_INSTALL_LOCATION. Es wird SUDO verwendet!"
-	 sudo mkdir $BIN
-      fi
-      mkdir $BIN
-      echo "Das Verzeichniss $BIN wurde angelegt"
-  fi
-  
-  if [ ! -d $ETC ]; then
-  echo -e "\033[1;34mEs konnte unter $UPDATER_INSTALL_LOCATION kein /ect Verzeichnis gefunden werden"
-  func_selection_query
-      if [ ! -w $UPDATER_INSTALL_LOCATION ]; then
-	  echo -e "Du hast kein Schreibrecht auf $UPDATER_INSTALL_LOCATION. Es wird SUDO verwendet!"
-	  sudo mkdir $ETC
-      fi
-      mkdir $ETC
-      echo "Das Verzeichniss $ETC wurde unter $UPDATER_INSTALL_LOCATION angelegt"
-  fi
 return 0
 }
 
@@ -190,7 +143,7 @@ func_check_calibre_install()  # Install oder Update Calibre Updater, Check ob Ca
 	#echo
 	if (( ! result )); then
 	    echo -e "\n\033[1;31mDie installation des Calibre-Autoupdaters wurde durch Dich abgebrochen.\e[m\n"
-	    exit 1  
+	    exit 0
 	fi
 	echo -e "\033[1;34mNach der Calibre Installation wird die Installation des Calibre Autoupdaters durchgeführt\e[m"
 	sleep 3
@@ -213,7 +166,7 @@ func_check_calibre_install()  # Install oder Update Calibre Updater, Check ob Ca
 	#echo
 	if (( ! result )); then
 	    echo -e "\n\033[1;31mDie installation des Calibre-Autoupdaters wurde durch Dich abgebrochen.\e[m\n"
-	    exit 1  
+	    exit 0
 	fi
     fi
 }
@@ -289,20 +242,18 @@ func_install_root()
 
 func_install_process()    # Installiert den Calibre Updater
 {
-func_term_output
-func_change_install_dir
-func_check_dir_structur
-func_check_calibre_install
-echo "Rausgeflogen"
-sleep 1000
+  func_term_output
+  func_change_install_dir
+# func_check_dir_structur
+  func_check_calibre_install
 
-    if [ -w "$UPDATER_INSTALL_LOCATION" ]; then
-	func_install_noroot
-    else	     	     
-	func_install_root
-    fi
-    echo -e "\n\n\033[1;36mDer Calibre-Autoupdater wurde erfolgreich installiert und"
-    echo -e "kann nun mit calibre-update oder $BIN"calibre-update" aufgerufen werden\e[m\n"
+  if [ -w "$UPDATER_INSTALL_LOCATION" ]; then
+      func_install_noroot
+  else
+      func_install_root
+  fi
+  echo -e "\n\n\033[1;36mDer Calibre-Autoupdater wurde erfolgreich installiert und"
+  echo -e "kann nun mit calibre-update oder $BIN"calibre-update" aufgerufen werden\e[m\n"
 }
 
 func_install_calibre()
@@ -326,8 +277,8 @@ func_install_calibre()
   func_install_process
 }
 
-while test "$#" -gt 0
-do
+  while test "$#" -gt 0
+  do
   arg="$1"
   shift
 
@@ -347,8 +298,8 @@ do
 	  func_install_calibre; exit 0
   esac
 
-done
-func_term_output
-func_usage
-echo -e "\e[m"
+  done
+  func_term_output
+  func_usage
+  echo -e "\e[m"
 exit 0
