@@ -80,17 +80,22 @@
 #        der Installer kontrolliert ob am Installationsort des Updaters die Verzeichnisstrucktur /bin /include /etc
 #        vorhanden ist und wenn nicht legt er sie an.
 #
+# v0.20  Der Code wurde komplett überarbeitet und vieles neu geschrieben. Sauberer Code und weniger Abfragen.
+#        Die Bedingungen und Schleifen wurden einfacher und logischer geschrieben
+#
 # TODO	 Auslesen der Download URL von der Download Seite
 #        kontrolle ob alle benötigten programme für das skript vorhanden sind
 #
 #
-######################################
-######################################
+##########################################################
+##########################################################
 
 
 # Programmversion
 PROGNAME=`basename $0`
 VERSION="_-VERSION-_"
+
+
 
 #################################
 ######### CONFIGURATION #########
@@ -98,11 +103,9 @@ VERSION="_-VERSION-_"
 # bis Veränderungen auf der Internetseite durchgeführt wurden
 #################################
 
-
 # Einlesen des Configfiles mit den Variablen für die Calibre Downloadseite, Hauptseite
 # und den Installationsfaden in der Verzeichnishierarchie
 source ../etc/calibre-autoupdate.conf
-
 
 #################################
 ##### Zusätzliche Funktionen aus Headerfiles laden #####
@@ -110,88 +113,78 @@ source ../etc/calibre-autoupdate.conf
 source ../include/calibre-autoupdate.h
 source ../include/calibre-autoupdate_checks.h
 
-
-
-
 #######################################################
 ####################################################### 
-##  main vom Script  --- Start des Updater Skripts
+
 
 func_update () {
 # Wenn eine grafische Oberfläche vorhanden ist, wird u.a. "notify-send" für Benachrichtigungen verwendet, ansonsten immer "echo"
-NOTIFY="echo"
-[ -n "$DISPLAY" ] && NOTIFY="notify-send -t 10000 -i /usr/share/icons/hicolor/256x256/apps/calibre-gui.png Calibre-Auto-Updater"
+    NOTIFY="echo"
+    [ -n "$DISPLAY" ] && NOTIFY="notify-send -t 10000 -i /usr/share/icons/hicolor/256x256/apps/calibre-gui.png Calibre-Auto-Updater"
 
+    func_term_output    # ruft die Funktion für Konsolenausgabe auf
+    func_check_stat  # ruft die Funktion "check Status Netzwerk und Downloadadressen" auf
+    CHECK_STATE_RESULT="$?"
 
-func_term_output    # ruft die Funktion für Konsolenausgabe auf
-func_check_stat  # ruft die Funktion "check Status Netzwerk und Downloadadressen" auf
-CHECK_STATE_RESULT="$?"
+    case "$CHECK_STATE_RESULT" in
+	1)
+	  func_check_version
+	  CHECK_VERCOMP_RESULT="$?"
 
-case "$CHECK_STATE_RESULT" in
-    1)
-	func_check_version
-	CHECK_VERCOMP_RESULT="$?"
-
-	case $CHECK_VERCOMP_RESULT in
-	   0) 
-	     $NOTIFY "Deine Calibre Version ist auf dem aktuellsten Stand ($CURRENT_VERSION).";;
-	   1) 
-	     $NOTIFY "Uh Oh! Deine Calibre Version ist aktueller wie die letzte Verfügbare! (Installiert: $CURRENT_VERSION, Letzte Verfügbare: $LATEST_VERSION)";;
-	   2) 
-	     $NOTIFY "Ein Calibre Update ist verfügbar. (Installiert: $CURRENT_VERSION, letzte Verfügbare: $LATEST_VERSION)"
-	     # Installiert die aktuellste verfügbare Version von der Calibre Homepage
-	     func_check_run_calibre # Aufruf der Funktion ob Calibre gestartet ist
-	     
-	     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
-		$NOTIFY "Das Update wird nun installiert..."
-	        echo -e "\e[m"
-	        wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
-	     else	     	     
-		$NOTIFY "Du hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Das Update wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
-		echo -e "\e[m"
-		sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
-	     fi
-	     $NOTIFY "Calibre wurde auf die neuste Version aktuallisiert." 
-	     ;;
-       esac
-       ;;
-    
-    2)
-    $NOTIFY "Versionsvergleich fehlgeschlagen!!! Die Calibre Homepage $CHECK_CALIBRE_DOWNLOAD_PAGE ist nicht verfügbar!"
-     ;;
-    3)
-    $NOTIFY "Update fehlgeschlagen!!! Die Download Seite $CHECK_DOWNLOAD_URL ist nicht verfügbar!"
-     ;;
-    4)
-    $NOTIFY "Update und Versionsvergleich fehlgeschlagen!!! Kann kein Netzwerkinterface finden!"
-    ;;
-esac
-echo -e "\e[m"
+	  case $CHECK_VERCOMP_RESULT in
+	      0) 
+		$NOTIFY "Deine Calibre Version ist auf dem aktuellsten Stand ($CURRENT_VERSION).";;
+	      1) 
+		$NOTIFY "Uh Oh! Deine Calibre Version ist aktueller wie die letzte Verfügbare! (Installiert: $CURRENT_VERSION, Letzte Verfügbare: $LATEST_VERSION)";;
+	      2) 
+		$NOTIFY "Ein Calibre Update ist verfügbar. (Installiert: $CURRENT_VERSION, letzte Verfügbare: $LATEST_VERSION)"
+		# Installiert die aktuellste verfügbare Version von der Calibre Homepage
+		func_check_run_calibre # Aufruf der Funktion ob Calibre gestartet ist
+		if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
+		    $NOTIFY "Das Update wird nun installiert..."
+		    echo -e "\e[m"
+		    wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
+		else	     	     
+		    $NOTIFY "Du hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Das Update wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort im Terminalfenster ein..."
+		    echo -e "\e[m"
+		    sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
+		fi
+		$NOTIFY "Calibre wurde auf die neuste Version aktuallisiert.";;
+	  esac
+	;;
+	2)
+	  $NOTIFY "Versionsvergleich fehlgeschlagen!!! Die Calibre Homepage $CHECK_CALIBRE_DOWNLOAD_PAGE ist nicht verfügbar!";;
+	3)
+	  $NOTIFY "Update fehlgeschlagen!!! Die Download Seite $CHECK_DOWNLOAD_URL ist nicht verfügbar!";;
+	4)
+	  $NOTIFY "Update und Versionsvergleich fehlgeschlagen!!! Kann kein Netzwerkinterface finden!";;
+    esac
+    echo -e "\e[m"
+    return 0
 }
 
+####  Main Funktion ####
 while test "$#" -gt 0
 do
-  arg="$1"
-  shift
+    arg="$1"
+    shift
+    case $arg in
+	-*=*) optarg=`echo "$arg" | sed -e 's/[-_a-zA-Z0-9]*=//'` ;;
+	*) optarg= ;;
+    esac
 
-  case $arg in
-      -*=*) optarg=`echo "$arg" | sed -e 's/[-_a-zA-Z0-9]*=//'` ;;
-      *) optarg= ;;
-  esac
-
-  case "$arg" in
-      --help | -h )
+    case "$arg" in
+	--help | -h )
 	  func_help; exit 0 ;;
-      --version | -V | -v )
+	--version | -V | -v )
 	  func_version; exit 0 ;;
-      --check | -C | -c )
+	--check | -C | -c )
 	  func_check_prog; exit 0 ;;
-      --uninstall | -U | -u )
+	--uninstall | -U | -u )
 	  func_uninstall; exit 0;;
-      --uninstall_calibre )
+	--uninstall_calibre )
 	  func_uninstall_calibre; exit 0 ;;
-  esac
-
+    esac
 done
 func_check_prog
 func_update
