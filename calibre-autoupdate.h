@@ -125,3 +125,37 @@ func_uninstall_calibre()
   echo -e "\n\033[1;32mCalibre würde DeInstalliert! Schade es ist ein tolles Programm zur eBookverwaltung :-)\n\e[m"
   return 0
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+func_install_calibre()
+{
+  if [ ! $CALIBRE_INSTALL_LOCATION ]; then
+    func_term_output
+    read -p "Wohin soll Calibre installiert werden? [default /opt] " CALIBRE_INSTALL_LOCATION
+  fi
+  if [ -z $CALIBRE_INSTALL_LOCATION ]; then
+      CALIBRE_INSTALL_LOCATION=/opt      
+  fi  
+  if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
+    echo -e "\033[1;32mCalibre wird nun installiert...\n\e[m"
+    wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
+  else	     	     
+    echo -e "\033[1;34mDu hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Calibre wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort ein...\n\e[m"
+    sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
+  fi
+  echo -e "\n\n\033[1;36mHerzlichen Glückwunsch. Calibre wurde installiert und kann nun mit "calibre" verwendet werden.\n\033[0m"
+  sleep 5
+
+}

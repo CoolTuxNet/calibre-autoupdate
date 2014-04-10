@@ -87,9 +87,6 @@
 ######################################
 ######################################
 
-# Installationsfade in der Verzeichnishierarchie
-ETC=_-ETC-_
-
 
 # Programmversion
 PROGNAME=`basename $0`
@@ -101,16 +98,17 @@ VERSION="_-VERSION-_"
 # bis Veränderungen auf der Internetseite durchgeführt wurden
 #################################
 
+
 # Einlesen des Configfiles mit den Variablen für die Calibre Downloadseite, Hauptseite
 # und den Installationsfaden in der Verzeichnishierarchie
-source $ETC/calibre-autoupdate.conf
+source ../etc/calibre-autoupdate.conf
 
 
 #################################
 ##### Zusätzliche Funktionen aus Headerfiles laden #####
 
-source $INC/calibre-autoupdate.h
-source $INC/calibre-autoupdate_checks.h
+source ../include/calibre-autoupdate.h
+source ../include/calibre-autoupdate_checks.h
 
 
 
