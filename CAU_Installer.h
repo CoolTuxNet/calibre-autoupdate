@@ -27,7 +27,6 @@ func_help ()     # Listet alle Optionsschalter auf
     echo "   -h, --help              zeigt die Hilfe an"
     echo "   -V, --version           gibt die Programmversion aus"
     echo "   -i, --install           installiert den Calibre-Autoupdater (CAU)"
-    echo "       --install_calibre   installiert Calibre in der aktuellsten Version"
     echo ""
     echo -e "Sende Fehler an <leongaultier@gmail.com>.\n"
     return 0

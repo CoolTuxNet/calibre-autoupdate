@@ -29,6 +29,7 @@ func_help ()
     echo "   -V, --version                gibt die Programmversion aus"
     echo "   -c, --check                  kontrolliert ob benötigte Programme vorhanden sind"
     echo "   -u, --uninstall              deinstalliert den Calibre-Autoupdater"
+    echo "       --install_calibre        installiert Calibre in der aktuellsten Version"
     echo "       --uninstall_calibre      deinstalliert das Calibre Programm"
     echo ""
     echo -e "Sende Fehler an <leongaultier@gmail.com>.\n";
@@ -134,13 +135,13 @@ func_uninstall_calibre()
 func_install_calibre()
 {
 # Installationsort von Calibre
-    read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
+    read -p "Wohin soll Calibre installiert werden? [default /opt] " CALIBRE_INSTALL_LOCATION
     if [ -z $CALIBRE_INSTALL_LOCATION ]; then
 	CALIBRE_INSTALL_LOCATION=/opt
     fi
     while [ ! -d $CALIBRE_INSTALL_LOCATION ]; do
 	echo -e "\n\033[1;31mDas Verzeichnis $CALIBRE_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis ein!\e[m"
-	read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
+	read -p "Wohin soll Calibre installiert werden? [default /opt] " CALIBRE_INSTALL_LOCATION
     done
     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
 	echo -e "\033[1;32mCalibre wird nun installiert...\n\e[m"

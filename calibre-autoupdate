@@ -102,16 +102,18 @@ VERSION="_-VERSION-_"
 # Diese Version funktioniert für alle Linuxsysteme nur so lange
 # bis Veränderungen auf der Internetseite durchgeführt wurden
 #################################
+# Installationsfade in der Verzeichnishierarchie
+ETC=_-ETC-_
 
 # Einlesen des Configfiles mit den Variablen für die Calibre Downloadseite, Hauptseite
 # und den Installationsfaden in der Verzeichnishierarchie
-source ../etc/calibre-autoupdate.conf
+source $ETC/calibre-autoupdate.conf
 
 #################################
 ##### Zusätzliche Funktionen aus Headerfiles laden #####
 
-source ../include/calibre-autoupdate.h
-source ../include/calibre-autoupdate_checks.h
+source $INC/calibre-autoupdate.h
+source $INC/calibre-autoupdate_checks.h
 
 #######################################################
 ####################################################### 
@@ -133,9 +135,9 @@ func_update () {
 
 	  case $CHECK_VERCOMP_RESULT in
 	      0) 
-		$NOTIFY "Deine Calibre Version ist auf dem aktuellsten Stand ($CURRENT_VERSION).";;
+		$NOTIFY "Deine Calibre Version ist auf dem aktuellsten Stand (Version $CURRENT_VERSION).";;
 	      1) 
-		$NOTIFY "Uh Oh! Deine Calibre Version ist aktueller wie die letzte Verfügbare! (Installiert: $CURRENT_VERSION, Letzte Verfügbare: $LATEST_VERSION)";;
+		$NOTIFY "Uh Oh! Deine Calibre Version ist aktueller wie die letzte Verfügbare! (Installiert: Version $CURRENT_VERSION, Letzte Verfügbare: Version $LATEST_VERSION)";;
 	      2) 
 		$NOTIFY "Ein Calibre Update ist verfügbar. (Installiert: $CURRENT_VERSION, letzte Verfügbare: $LATEST_VERSION)"
 		# Installiert die aktuellste verfügbare Version von der Calibre Homepage
@@ -149,7 +151,7 @@ func_update () {
 		    echo -e "\e[m"
 		    sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
 		fi
-		$NOTIFY "Calibre wurde auf die neuste Version aktuallisiert.";;
+		$NOTIFY "Calibre wurde auf die neuste Version $LATEST_VERSION aktuallisiert.";;
 	  esac
 	;;
 	2)
@@ -181,7 +183,9 @@ do
 	--check | -C | -c )
 	  func_check_prog; exit 0 ;;
 	--uninstall | -U | -u )
-	  func_uninstall; exit 0;;
+	  func_uninstall; exit 0 ;;
+	--install_calibre )
+	  func_install_calibre; exit 0 ;;
 	--uninstall_calibre )
 	  func_uninstall_calibre; exit 0 ;;
     esac

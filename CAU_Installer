@@ -18,7 +18,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.14.99.6"
+VERSION="0.19.99.7"
 
 ##### Variablen deklaration #####
 # Downloadseite der Linuxinstallation
@@ -63,14 +63,17 @@ func_install_noroot()
     echo -e "\n\033[1;36mDie Programm-Dateien werden nach $BIN kopiert\e[m\e[m"
     if [ ! -d $BIN ]; then mkdir $BIN; fi; if [ ! -d $ETC ]; then mkdir $ETC; fi; if [ ! -d $INC ]; then mkdir $INC; fi
     cp calibre-autoupdate $BIN; chmod 755 $BIN"calibre-autoupdate"
-    sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"		# Der Installer übergibt die Versionsnummer   
+    sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate" 
+    sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"
     func_progressbar
     echo -e "\n\033[1;36mDie Header-Dateien werden nach $INC kopiert\e[m"
     cp calibre-autoupdate.h calibre-autoupdate_checks.h $INC; chmod 644 $INC"calibre-autoupdate.h" $INC"calibre-autoupdate_checks.h"
     func_progressbar
     echo -e "\n\033[1;36mDie Konfigurations-Dateien werden nach $ETC kopiert\e[m"
     cp calibre-autoupdate.conf $ETC; chmod 644 $ETC"calibre-autoupdate.conf";
-    sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/g" $ETC"calibre-autoupdate.conf" # Ort der Calibreinstall
+    sed -i "s/_-INC-_/${INC//\//\/}/g" $ETC"calibre-autoupdate.conf"
+    sed -i "s/_-BIN-_/${BIN//\//\/}/g" $ETC"calibre-autoupdate.conf"
+    sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/g" $ETC"calibre-autoupdate.conf"
     func_progressbar
     return 0
 }
@@ -81,14 +84,17 @@ func_install_root()
     sudo echo -e "\n\033[1;36mDie Programm-Dateien werden nach $BIN kopiert\e[m\e[m"
     if [ ! -d $BIN ]; then sudo mkdir $BIN; fi; if [ ! -d $ETC ]; then sudo mkdir $ETC; fi; if [ ! -d $INC ]; then sudo mkdir $INC; fi
     sudo cp calibre-autoupdate $BIN; sudo chmod 755 $BIN"calibre-autoupdate"
-    sudo sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"		# Der Installer übergibt die Versionsnummer
+    sudo sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate"
+    sudo sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"
     func_progressbar
     echo -e "\n\033[1;36mDie Header-Dateien werden nach $INC kopiert\e[m"
     sudo cp calibre-autoupdate.h calibre-autoupdate_checks.h $INC; sudo chmod 644 $INC"calibre-autoupdate.h" $INC"calibre-autoupdate_checks.h"
     func_progressbar
     echo -e "\n\033[1;36mDie Konfigurations-Dateien werden nach $ETC kopiert\e[m"
     sudo cp calibre-autoupdate.conf $ETC; sudo chmod 644 $ETC"calibre-autoupdate.conf";
-    sudo sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/g" $ETC"calibre-autoupdate.conf" # Ort der Calibreinstall
+    sudo sed -i "s/_-INC-_/${INC//\//\/}/g" $ETC"calibre-autoupdate.conf"
+    sudo sed -i "s/_-BIN-_/${BIN//\//\/}/g" $ETC"calibre-autoupdate.conf"
+    sudo sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/g" $ETC"calibre-autoupdate.conf"
     func_progressbar
     return 0
 }
@@ -130,48 +136,3 @@ func_term_output
 func_usage
 echo -e "\e[m"
 exit 0
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-###############################################################################
-
-# Die sed Befehle ersetzen in den Programmdateien Platzhalter für den Installationsort.
-# Grund hierfür sind die includes der Header unf Configfiles die den kompletten Fad benörigen
-#	echo -e "\n\033[1;34mDer Calibre-Autoupdater wird nun unter $UPDATER_INSTALL_LOCATION installiert...\e[m";
-#	echo -e "\033[1;32mDie Programm-Dateien werden nach $BIN kopiert\e[m"
-#	cp calibre-autoupdate $BIN
- #       #sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate" 
-#	#sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"
-#	chmod 755 $BIN/calibre-autoupdate
-#	func_progressbar
-#	echo -e "\n\033[1;32mDie Header-Dateien werden nach $INC kopiert\e[m"
-#	cp calibre-autoupdate.h calibre-autoupdate_checks.h $INC
-#	chmod 644 $INC/calibre-autoupdate.h $INC/calibre-autoupdate_checks.h
-#	func_progressbar
-#	echo -e "\n\033[1;32mDie Konfigurations-Dateien wird nach $ETC kopiert\e[m"
-#	cp calibre-autoupdate.conf $ETC
-#	#sed -i "s/_-INC-_/${INC//\//\/}/g" $ETC"calibre-autoupdate.conf"
-#	#sed -i "s/_-BIN-_/${BIN//\//\/}/g" $ETC"calibre-autoupdate.conf"
-#	#sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/g" $ETC"calibre-autoupdate.conf"
-#	chmod 644 $ETC/calibre-autoupdate.conf
-#	func_progressbar
-#	return 0
-################################################################################

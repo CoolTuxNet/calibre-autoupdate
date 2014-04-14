@@ -68,9 +68,42 @@ func_check_run_calibre () {
     done
     kill -15 $CALIBRE_PID
     return 0
+    
+    
+    
+    
+    
+    
+    # Installationsort vom Updater
+    read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local] " UPDATER_INSTALL_LOCATION
+    if [ -z $UPDATER_INSTALL_LOCATION ]; then
+	UPDATER_INSTALL_LOCATION=/usr/local
+    fi
+    while [ ! -d $UPDATER_INSTALL_LOCATION ]; do
+	echo -e "\n\033[1;31mDas Verzeichnis $UPDATER_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis ein!\e[m"
+	read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local] " UPDATER_INSTALL_LOCATION
+    done
+    # Installationsort von Calibre
+    read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
+    if [ -z $CALIBRE_INSTALL_LOCATION ]; then
+	CALIBRE_INSTALL_LOCATION=/opt
+    fi
+    while [ ! -d $CALIBRE_INSTALL_LOCATION ]; do
+	echo -e "\n\033[1;31mDas Verzeichnis $CALIBRE_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis ein!\e[m"
+	read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
+    done
+    
+    
+    
+    
+ 
+    
+    
+    
   done
   return 0
 }
+
 
 
 
@@ -110,19 +143,6 @@ func_check_version () {
     done
     return 0  
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 func_check_prog () {
     func_term_output  
