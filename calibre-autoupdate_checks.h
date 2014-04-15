@@ -47,8 +47,8 @@ func_check_run_calibre () {
     return 0
 }
 
-func_check_version_alternate() {	# Wurde von einem User im Mobilreaderforum vorgeschlagen. Ist mir aber zu
-					# ehrlich gesagt zu unflexibel. Habe es für mich selber aber mal Dokumentiert
+func_check_version_alternate() {	# Wurde von einem User im Mobilreaderforum vorgeschlagen. Ist mir aber ehrlich
+					# gesagt zu unflexibel. Habe es für mich selber aber mal Dokumentiert
     calibre-debug -c "import urllib as u; from calibre.constants import numeric_version; raise SystemExit(int(numeric_version  < (tuple(map(int, u.urlopen('http://calibre-ebook.com/downloads/latest_version').read().split('.'))))))"
 
     UP_TO_DATE=$?
@@ -72,13 +72,13 @@ func_check_version () {
     fi
     local IFS=.
     local i ver1=($CURRENT_VERSION) ver2=($LATEST_VERSION)
-    # schreibe nullen in leere Felder von ver1
+    # schreibe Nullen in leere Felder von ver1
     for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
 	ver1[i]=0
     done
     for ((i=0; i<${#ver1[@]}; i++)); do
 	if [[ -z ${ver2[i]} ]]; then
-	    # schreibe nullen in leere Felder von ver2
+	    # schreibe Nullen in leere Felder von ver2
 	    ver2[i]=0
 	fi
 	if ((10#${ver1[i]} > 10#${ver2[i]})); then

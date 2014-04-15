@@ -18,7 +18,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.20.90.1"
+VERSION="0.20.90.3"
 
 ##### Variablen deklaration #####
 # Downloadseite der Linuxinstallation
