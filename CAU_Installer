@@ -18,7 +18,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.19.99.9"
+VERSION="0.20"
 
 ##### Variablen deklaration #####
 # Downloadseite der Linuxinstallation
@@ -81,17 +81,17 @@ func_install_root() {
     sudo echo -e "\n\033[1;36mDie Programm-Dateien werden nach $BIN kopiert\e[m\e[m"
     if [ ! -d $BIN ]; then sudo mkdir $BIN; fi; if [ ! -d $ETC ]; then sudo mkdir $ETC; fi; if [ ! -d $INC ]; then sudo mkdir $INC; fi
     sudo cp calibre-autoupdate $BIN; sudo chmod 755 $BIN"calibre-autoupdate"
-    sudo sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate"
-    sudo sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"
+    sudo sed -i "s/_-ETC-_/${ETC//\//\/}/" $BIN"calibre-autoupdate"
+    sudo sed -i "s/_-VERSION-_/${VERSION//\//\/}/" $BIN"calibre-autoupdate"
     func_progressbar
     echo -e "\n\033[1;36mDie Header-Dateien werden nach $INC kopiert\e[m"
     sudo cp calibre-autoupdate.h calibre-autoupdate_checks.h $INC; sudo chmod 644 $INC"calibre-autoupdate.h" $INC"calibre-autoupdate_checks.h"
     func_progressbar
     echo -e "\n\033[1;36mDie Konfigurations-Dateien werden nach $ETC kopiert\e[m"
     sudo cp calibre-autoupdate.conf $ETC; sudo chmod 644 $ETC"calibre-autoupdate.conf";
-    sudo sed -i "s/_-INC-_/${INC//\//\/}/g" $ETC"calibre-autoupdate.conf"
-    sudo sed -i "s/_-BIN-_/${BIN//\//\/}/g" $ETC"calibre-autoupdate.conf"
-    sudo sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/g" $ETC"calibre-autoupdate.conf"
+    sudo sed -i "s/_-INC-_/${INC//\//\/}/" $ETC"calibre-autoupdate.conf"
+    sudo sed -i "s/_-BIN-_/${BIN//\//\/}/" $ETC"calibre-autoupdate.conf"
+    sudo sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/" $ETC"calibre-autoupdate.conf"
     func_progressbar
     return 0
 }
@@ -104,7 +104,7 @@ func_install_process() {    # Installiert den Calibre Updater
     else
 	func_install_root
     fi
-    echo -e "\n\n\033[1;34mDer Calibre-Autoupdater wurde erfolgreich installiert und"
+    echo -e "\n\n\033[1;32mDer Calibre-Autoupdater wurde erfolgreich installiert und"
     echo -e "kann nun mit \"calibre-update\" oder \"$BIN"calibre-update"\" aufgerufen werden\e[m\n"
     return 0
 }

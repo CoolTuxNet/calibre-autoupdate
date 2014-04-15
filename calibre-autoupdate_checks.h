@@ -77,21 +77,26 @@ func_check_version () {
     return 0  
 }
 
-func_check_prog () {
-    func_term_output  
+func_check_prog () {         # Schaut ob Calibre und benötigte Programme installiert sind
+    func_term_output
+    if [ ! -d $CALIBRE_INSTALL_LOCATION/calibre ]; then
+	$NOTIFY "Check auf Calibre-Updates nicht möglich! Calibre ist gar nicht installiert. Bitte verwende calibre-autoupdate --install-calibre um Calibre zu installieren"
+	exit 0
+    fi
     if [ ! -f $CURL ]; then
 	$NOTIFY "Du hast Curl nich installiert, es wird aber für die Updatefunktion benötigt"
-	break
+	exit 0
     fi
     if [ ! -f $AWK ]; then
 	$NOTIFY "Du hast AWK nich installiert, es wird aber für die Updatefunktion benötigt"
-	break
+	exit 0
     fi
-    if [ ! -f $NOTIFY ]; then
+    if [ ! -f /usr/bin/notify-send ]; then
 	echo -e "\e[0;33mDu hast Notify-Send nich installiert, das Programm ist optional und wird\e[m"
 	echo -e "für die Upatefunktion nicht unbedingt benötigt\n\e[m"
 	sleep 10
-    fi  
+    fi
     echo -e "\033[32mAlle benötigten Programme sind installiert. Starte $PROGNAME ohne Optionen und"
     echo -e "es wird nach einer aktuellen Calibre Version gesucht\n\e[m";
+    return 0
 }

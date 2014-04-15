@@ -82,6 +82,11 @@
 #
 # v0.20  Der Code wurde komplett überarbeitet und vieles neu geschrieben. Sauberer Code und weniger Abfragen.
 #        Die Bedingungen und Schleifen wurden einfacher und logischer geschrieben
+#        Die Prüfung ob Calibre noch gestartet ist wenn ein Update gemacht wird ist nun simpler geschrieben,
+#        und es wird nicht mehr hart beendet sondern gewartet bis der Benutzer Calibre beendet
+#        Die Calibre Installation ist vom Installer in das Updaterskript gewandert, und im Zuge einer Calibre-
+#        installation wird automatisch die Konfigurationsdatei des Updaters angepasst (übergabe CalibreInstallOrt)
+#        Es wird wieder geprüft ob Calibre installiert ist bevor der Updater gestartet wird
 #
 # TODO	 Auslesen der Download URL von der Download Seite
 #        kontrolle ob alle benötigten programme für das skript vorhanden sind
@@ -118,12 +123,14 @@ source $INC/calibre-autoupdate_checks.h
 #######################################################
 ####################################################### 
 
+# Wenn eine grafische Oberfläche vorhanden ist, wird u.a. "notify-send" für Benachrichtigungen verwendet, ansonsten immer "echo"
+NOTIFY="echo"
+[ -n "$DISPLAY" ] && NOTIFY="notify-send -t 10000 -i /usr/share/icons/hicolor/256x256/apps/calibre-gui.png Calibre-Auto-Updater"
+    
+#######################################################
+
 
 func_update () {
-# Wenn eine grafische Oberfläche vorhanden ist, wird u.a. "notify-send" für Benachrichtigungen verwendet, ansonsten immer "echo"
-    NOTIFY="echo"
-    [ -n "$DISPLAY" ] && NOTIFY="notify-send -t 10000 -i /usr/share/icons/hicolor/256x256/apps/calibre-gui.png Calibre-Auto-Updater"
-
     func_term_output    # ruft die Funktion für Konsolenausgabe auf
     func_check_stat  # ruft die Funktion "check Status Netzwerk und Downloadadressen" auf
     CHECK_STATE_RESULT="$?"
@@ -184,9 +191,9 @@ do
 	  func_check_prog; exit 0 ;;
 	--uninstall | -U | -u )
 	  func_uninstall; exit 0 ;;
-	--install_calibre )
+	--install-calibre )
 	  func_install_calibre; exit 0 ;;
-	--uninstall_calibre )
+	--uninstall-calibre )
 	  func_uninstall_calibre; exit 0 ;;
     esac
 done

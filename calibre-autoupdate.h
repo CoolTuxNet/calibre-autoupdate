@@ -26,8 +26,8 @@ func_help () {
     echo "   -V, --version                gibt die Programmversion aus"
     echo "   -c, --check                  kontrolliert ob benötigte Programme vorhanden sind"
     echo "   -u, --uninstall              deinstalliert den Calibre-Autoupdater"
-    echo "       --install_calibre        installiert Calibre in der aktuellsten Version"
-    echo "       --uninstall_calibre      deinstalliert das Calibre Programm"
+    echo "       --install-calibre        installiert Calibre in der aktuellsten Version"
+    echo "       --uninstall-calibre      deinstalliert das Calibre Programm"
     echo ""
     echo -e "Sende Fehler an <leongaultier@gmail.com>.\n";
     return 0
@@ -77,7 +77,7 @@ func_uninstall() {
     done
     if (( ! result )); then
 	echo -e "\033[1;31mDie DeInstallation des Calibre-Autoupdaters wurde durch Dich abgebrochen.\e[m\n"
-	break
+	exit 0
     fi
     echo -e "\033[1;31mDer Calibre-Autoupdater wird nun deinstalliert.\e[m"
     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
@@ -98,7 +98,7 @@ func_uninstall_calibre() {
     func_term_output
     if [ ! -d $CALIBRE_INSTALL_LOCATION/calibre ] ; then
 	echo -e "\033[1;31mEs konnte keine Calibre Installation gefunden werden. Die DeInstallation wurde abgebrochen\e[m\n"
-	break
+	exit 0
     fi
     while ((!gueltig)); do    # beginn der Ja/Nein Abfrage
 	echo -e "\033[1;34mMöchtest Du Calibre wirklich DeInstallieren? Calibre kann dann nicht mehr verwendet werden!"
@@ -113,7 +113,7 @@ func_uninstall_calibre() {
     done
     if (( ! result )); then
 	echo -e "\n\033[1;31mDie DeInstallation von Calibre wurde durch Dich abgebrochen.\e[m\n"
-	break  
+	exit 0
     fi
     echo -e "\033[1;34mCalibre wird nun deinstalliert.\e[m"    
     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
@@ -127,6 +127,7 @@ func_uninstall_calibre() {
 
 func_install_calibre() {
 # Installationsort von Calibre
+    func_term_output
     read -p "Wohin soll Calibre installiert werden? [default /opt] " CALIBRE_INSTALL_LOCATION
     if [ -z $CALIBRE_INSTALL_LOCATION ]; then
 	CALIBRE_INSTALL_LOCATION=/opt
@@ -136,13 +137,21 @@ func_install_calibre() {
 	read -p "Wohin soll Calibre installiert werden? [default /opt] " CALIBRE_INSTALL_LOCATION
     done
     if [ -w "$CALIBRE_INSTALL_LOCATION" ]; then
-	echo -e "\033[1;32mCalibre wird nun installiert...\n\e[m"
+	echo -e "\n\033[1;32mCalibre wird nun installiert...\n\e[m"
 	wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
+	if [ ! -w "$ECT" ]; then
+	    echo -e "\033[1;34mDu hast kein Schreibrecht auf $ETC. Die Updater Konfigurationsdatei wird mit SUDO angepasst. Bitte gib hierzu Dein Userpasswort im Terminal ein...\n\e[m"
+	    sudo sed -i "s/CALIBRE_INSTALL_LOCATION=.*/CALIBRE_INSTALL_LOCATION=${CALIBRE_INSTALL_LOCATION//\//\/}/" $ETC"calibre-autoupdate.conf"
+	else
+	    sed -i "s/CALIBRE_INSTALL_LOCATION=.*/CALIBRE_INSTALL_LOCATION=${CALIBRE_INSTALL_LOCATION//\//\/}/" $ETC"calibre-autoupdate.conf"
+	fi
     else	     	     
-	echo -e "\033[1;34mDu hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION. Calibre wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort ein...\n\e[m"
+	echo -e "\033[1;34mDu hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION."
+	echo -e "Calibre wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort ein...\n\e[m"
 	sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
+	sudo sed -i "s/CALIBRE_INSTALL_LOCATION=.*/CALIBRE_INSTALL_LOCATION=${CALIBRE_INSTALL_LOCATION//\//\/}/" $ETC"calibre-autoupdate.conf"
     fi
-    echo -e "\n\n\033[1;36mHerzlichen Glückwunsch. Calibre wurde unter $CALIBRE_INSTALL_LOCATION installiert"
+    echo -e "\n\n\033[1;32mHerzlichen Glückwunsch. Calibre wurde unter $CALIBRE_INSTALL_LOCATION installiert"
     echo -e "und kann nun mit \"calibre\" verwendet werden.\n\033[0m"
     return 0
 }
