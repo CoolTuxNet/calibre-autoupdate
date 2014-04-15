@@ -2,24 +2,21 @@
 #    Copyright (C) 2013-2014  Leon Gaultier
 #
 
-func_term_output ()
-{
+func_term_output () {
     ## Beginne mit der Ausgbe ##
     tty -s && clear
     echo -e "\033[44m \033[0m\033[1m $PROGNAME Version $VERSION\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n\e[m";
     return 0
 }
 
-func_usage ()
-{
+func_usage () {
     func_term_output
     echo "Verwendung: $PROGNAME [OPTION...]"
     echo "Verwende '$PROGNAME --help' oder '$PROGNAME -h' für mehr Informationen."
     return 0
 }
 
-func_help ()
-{
+func_help () {
     func_term_output
     echo "Verwende: $PROGNAME [OPTION...]"
     echo "$PROGNAME -- Der Calibre! Linux Edition calibre-autoupdater (CAU)"
@@ -36,8 +33,7 @@ func_help ()
     return 0
 }
 
-func_version ()
-{
+func_version () {
     func_term_output
     echo "$PROGNAME: Der Calibre! autoupdater v$VERSION"
     echo "Leon Gaultier 2013-2014. Das Programm darf verteilt werden,"
@@ -45,8 +41,7 @@ func_version ()
     return 0
 }
 
-func_progressbar()
-{
+func_progressbar() {
     echo -e -n $'\033[34m------------------------------------------------------------------------- 100%\r'
     echo -e -n "\033[32m0% "
     for ((i=0; i<61; i++)); do
@@ -67,8 +62,7 @@ func_progressbar()
     return 0
 }
 
-func_uninstall()
-{
+func_uninstall() {
     func_term_output
     while ((!gueltig)); do    # beginn der Ja/Nein Abfrage
 	echo -e "\033[1;34m"
@@ -100,8 +94,7 @@ func_uninstall()
     return 0
 }
 
-func_uninstall_calibre()
-{
+func_uninstall_calibre() {
     func_term_output
     if [ ! -d $CALIBRE_INSTALL_LOCATION/calibre ] ; then
 	echo -e "\033[1;31mEs konnte keine Calibre Installation gefunden werden. Die DeInstallation wurde abgebrochen\e[m\n"
@@ -132,8 +125,7 @@ func_uninstall_calibre()
     return 0
 }
 
-func_install_calibre()
-{
+func_install_calibre() {
 # Installationsort von Calibre
     read -p "Wohin soll Calibre installiert werden? [default /opt] " CALIBRE_INSTALL_LOCATION
     if [ -z $CALIBRE_INSTALL_LOCATION ]; then

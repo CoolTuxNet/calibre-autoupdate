@@ -18,7 +18,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.19.99.7"
+VERSION="0.19.99.9"
 
 ##### Variablen deklaration #####
 # Downloadseite der Linuxinstallation
@@ -31,8 +31,7 @@ source CAU_Installer.h
 #################################
 
 
-func_change_install_dir()   # Funktion zur Abfrage der Installationsorte vom Updater und von Calibre
-{
+func_change_install_dir() {   # Funktion zur Abfrage der Installationsorte vom Updater und von Calibre
     # Installationsort vom Updater
     read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local] " UPDATER_INSTALL_LOCATION
     if [ -z $UPDATER_INSTALL_LOCATION ]; then
@@ -58,8 +57,7 @@ func_change_install_dir()   # Funktion zur Abfrage der Installationsorte vom Upd
     return 0
 }
 
-func_install_noroot()
-{
+func_install_noroot() {
     echo -e "\n\033[1;36mDie Programm-Dateien werden nach $BIN kopiert\e[m\e[m"
     if [ ! -d $BIN ]; then mkdir $BIN; fi; if [ ! -d $ETC ]; then mkdir $ETC; fi; if [ ! -d $INC ]; then mkdir $INC; fi
     cp calibre-autoupdate $BIN; chmod 755 $BIN"calibre-autoupdate"
@@ -78,8 +76,7 @@ func_install_noroot()
     return 0
 }
 
-func_install_root()
-{
+func_install_root() {
     echo -e "\n\033[1;34mDu hast kein Schreibrecht auf $UPDATER_INSTALL_LOCATION, daher wird SUDO versucht zu verwenden...\e[m";
     sudo echo -e "\n\033[1;36mDie Programm-Dateien werden nach $BIN kopiert\e[m\e[m"
     if [ ! -d $BIN ]; then sudo mkdir $BIN; fi; if [ ! -d $ETC ]; then sudo mkdir $ETC; fi; if [ ! -d $INC ]; then sudo mkdir $INC; fi
@@ -99,8 +96,7 @@ func_install_root()
     return 0
 }
 
-func_install_process()    # Installiert den Calibre Updater
-{
+func_install_process() {    # Installiert den Calibre Updater
     func_term_output
     func_change_install_dir
     if [ -w "$UPDATER_INSTALL_LOCATION" ]; then

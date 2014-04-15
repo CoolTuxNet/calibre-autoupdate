@@ -2,8 +2,7 @@
 #    Copyright (C) 2013-2014  Leon Gaultier
 #
 
-func_http_status_code ()
-{
+func_http_status_code () {
     echo -e "\033[1;34m Hole Status Code von $CHECK_CALIBRE_DOWNLOAD_PAGE. Bitte warten.\e[m"
     stat_1=$(curl -o /dev/null --silent --head --write-out '%{http_code}' $CHECK_CALIBRE_DOWNLOAD_PAGE)
     func_progressbar
@@ -15,8 +14,7 @@ func_http_status_code ()
     return 0
 }
 
-func_check_stat () 	# Funktion zum Check Verfügbarkeit der Downloadseiten und der Internetverbindung
-{          
+func_check_stat () { 	# Funktion zum Check Verfügbarkeit der Downloadseiten und der Internetverbindung
     # Test for network conection
     echo -e "\n\033[1;34m Suche nach vorhandenen Netzwerk für die Verbindung zum Internet :-)\e[m"
     for INTERFACE in $(ls /sys/class/net/ | grep -v lo); do
@@ -42,77 +40,12 @@ func_check_stat () 	# Funktion zum Check Verfügbarkeit der Downloadseiten und d
     return 0
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 func_check_run_calibre () {
-  CALIBRE_PID=`ps ax | grep /opt/calibre/bin/calibre | grep -v grep | awk '{printf $1}'`
-
-  while [ $CALIBRE_PID ]; do
-    $NOTIFY "Um das Update installieren zu können, muss Calibre beendet werden. Calibre wird in einer Minute vom Update Service beendet. !!!Bitte speichere alle wichtigen Daten!!!"
-    sleep 3
-    echo ""
-    for (( i=60; i>0; i-- )); do
-      echo -e -n "\033[31m noch \033[32m>>$i<< \033[31m Sekunden bis zum Calibre Programmende\r\e[m"
-      sleep 1
+    while [ `ps ax | grep /opt/calibre/bin/calibre | grep -v grep | awk '{printf $1}'` ]; do
+	$NOTIFY "Um das Update installieren zu können, muss Calibre geschlossen werden..."
     done
-    kill -15 $CALIBRE_PID
     return 0
-    
-    
-    
-    
-    
-    
-    # Installationsort vom Updater
-    read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local] " UPDATER_INSTALL_LOCATION
-    if [ -z $UPDATER_INSTALL_LOCATION ]; then
-	UPDATER_INSTALL_LOCATION=/usr/local
-    fi
-    while [ ! -d $UPDATER_INSTALL_LOCATION ]; do
-	echo -e "\n\033[1;31mDas Verzeichnis $UPDATER_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis ein!\e[m"
-	read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local] " UPDATER_INSTALL_LOCATION
-    done
-    # Installationsort von Calibre
-    read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
-    if [ -z $CALIBRE_INSTALL_LOCATION ]; then
-	CALIBRE_INSTALL_LOCATION=/opt
-    fi
-    while [ ! -d $CALIBRE_INSTALL_LOCATION ]; do
-	echo -e "\n\033[1;31mDas Verzeichnis $CALIBRE_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis ein!\e[m"
-	read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
-    done
-    
-    
-    
-    
- 
-    
-    
-    
-  done
-  return 0
 }
-
-
-
-
-
-
-
-
-
-
 
 func_check_version () {
     #Ermitteln der letzten aktuell verfügbaren Version

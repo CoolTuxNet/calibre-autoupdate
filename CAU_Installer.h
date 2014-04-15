@@ -9,16 +9,14 @@ func_term_output () {			# einheitliche Terminalausgabe
     return 0
 }
 
-func_usage ()    # Gibt Auskunft über Verwendung des Scriptes
-{
+func_usage () {    # Gibt Auskunft über Verwendung des Scriptes
     func_term_output
     echo "Verwendung: $PROGNAME [OPTION...]"
     echo -e "Verwende $PROGNAME --help oder $PROGNAME -h für mehr Informationen.\n"
     return 0
 }
 
-func_help ()     # Listet alle Optionsschalter auf
-{
+func_help () {     # Listet alle Optionsschalter auf
     func_term_output
     echo "Verwende: $PROGNAME [OPTION...]"
     echo "$PROGNAME -- Der Calibre-Autoupdate-Installer (CAUI)"
@@ -32,8 +30,8 @@ func_help ()     # Listet alle Optionsschalter auf
     return 0
 }
 
-func_version ()  # Versionsauskunft des Installers
-{
+func_version () {  # Versionsauskunft des Installers
+
     func_term_output
     echo "$PROGNAME: Der Calibre-Autoupdate-Installer (CAUI) v$VERSION"
     echo "Leon Gaultier 2013-2014. Das Programm darf verteilt werden,"
@@ -41,8 +39,7 @@ func_version ()  # Versionsauskunft des Installers
     return 0
 }
 
-func_progressbar()
-{
+func_progressbar() {
     echo -e -n $'\033[34m------------------------------------------------------------------------- 100%\r'
     echo -e -n "\033[32m0% "
     for ((i=0; i<61; i++)); do
