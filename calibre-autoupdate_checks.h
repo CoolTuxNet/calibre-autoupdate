@@ -47,9 +47,22 @@ func_check_run_calibre () {
     return 0
 }
 
+func_check_version_alternate() {	# Wurde von einem User im Mobilreaderforum vorgeschlagen. Ist mir aber zu
+					# ehrlich gesagt zu unflexibel. Habe es für mich selber aber mal Dokumentiert
+    calibre-debug -c "import urllib as u; from calibre.constants import numeric_version; raise SystemExit(int(numeric_version  < (tuple(map(int, u.urlopen('http://calibre-ebook.com/downloads/latest_version').read().split('.'))))))"
+
+    UP_TO_DATE=$?
+    if [ $UP_TO_DATE = 0 ]; then
+	return 0
+    else
+	return 2
+    fi
+    echo -e "\n\033[31m Fehler!!! Es wurde beim Versionscheck ein unbekannter Wert zurückgegeben!\e[m"
+    exit 0
+}
+
 func_check_version () {
     #Ermitteln der letzten aktuell verfügbaren Version
-    # ALTE VERSION -- LATEST_VERSION=`curl -s $CALIBRE_DOWNLOAD_PAGE | grep 'latest release of calibre' | sed 's/[^0-9.]*\([1-9]*[0-9]\.[1-9]*[0-9]\).*/\1/'`
     LATEST_VERSION=`curl -s $CALIBRE_LAST_VERSION_PAGE`
     #Ermitteln der aktuell installierten Version.
     CURRENT_VERSION=`calibre --version | sed 's/[^0-9.]*\([0-9.]*\).*/\1/'`
@@ -59,13 +72,13 @@ func_check_version () {
     fi
     local IFS=.
     local i ver1=($CURRENT_VERSION) ver2=($LATEST_VERSION)
-    # fill empty fields in ver1 with zeros
+    # schreibe nullen in leere Felder von ver1
     for ((i=${#ver1[@]}; i<${#ver2[@]}; i++)); do
 	ver1[i]=0
     done
     for ((i=0; i<${#ver1[@]}; i++)); do
 	if [[ -z ${ver2[i]} ]]; then
-	    # fill empty fields in ver2 with zeros
+	    # schreibe nullen in leere Felder von ver2
 	    ver2[i]=0
 	fi
 	if ((10#${ver1[i]} > 10#${ver2[i]})); then
