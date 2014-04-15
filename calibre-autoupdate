@@ -88,6 +88,9 @@
 #        installation wird automatisch die Konfigurationsdatei des Updaters angepasst (übergabe CalibreInstallOrt)
 #        Es wird wieder geprüft ob Calibre installiert ist bevor der Updater gestartet wird
 #
+# v0.21  Um die neuste Version von der Calibrehomepage fest zu stellen wurde die Routine geändert. Es wird nun ganz
+#        einfach und simpel die Seite http://calibre-ebook.com/downloads/latest_version abgefragt   :-D
+#
 # TODO	 Auslesen der Download URL von der Download Seite
 #        kontrolle ob alle benötigten programme für das skript vorhanden sind
 #

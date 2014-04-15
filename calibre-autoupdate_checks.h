@@ -49,7 +49,8 @@ func_check_run_calibre () {
 
 func_check_version () {
     #Ermitteln der letzten aktuell verfügbaren Version
-    LATEST_VERSION=`curl -s $CALIBRE_DOWNLOAD_PAGE | grep 'latest release of calibre' | sed 's/[^0-9.]*\([1-9]*[0-9]\.[1-9]*[0-9]\).*/\1/'`
+    # ALTE VERSION -- LATEST_VERSION=`curl -s $CALIBRE_DOWNLOAD_PAGE | grep 'latest release of calibre' | sed 's/[^0-9.]*\([1-9]*[0-9]\.[1-9]*[0-9]\).*/\1/'`
+    LATEST_VERSION=`curl -s $CALIBRE_LAST_VERSION_PAGE`
     #Ermitteln der aktuell installierten Version.
     CURRENT_VERSION=`calibre --version | sed 's/[^0-9.]*\([0-9.]*\).*/\1/'`
 
