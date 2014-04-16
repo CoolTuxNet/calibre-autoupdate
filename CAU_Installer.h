@@ -2,14 +2,14 @@
 #    Copyright (C) 2013-2014  Leon Gaultier
 #
 
-func_term_output () {			# einheitliche Terminalausgabe
+func_term_output () {			# einheitliche Terminalausgabe, Terminal löschen
     ## Beginne mit der Ausgbe ##
     tty -s && clear
     echo -e "\033[44m \033[0m\033[1m $PROGNAME: Der Calibre-Autoupdate-Installer Version $VERSION\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n\e[m";
     return 0
 }
 
-func_usage () {    # Gibt Auskunft über Verwendung des Scriptes
+func_usage () {    # Gibt Auskunft über die Aufrufmöglichkeiten des Scriptes
     func_term_output
     echo "Verwendung: $PROGNAME [OPTION...]"
     echo -e "Verwende $PROGNAME --help oder $PROGNAME -h für mehr Informationen.\n"
@@ -30,7 +30,7 @@ func_help () {     # Listet alle Optionsschalter auf
     return 0
 }
 
-func_version () {  # Versionsauskunft des Installers
+func_version () {  	# Versionsauskunft des Updater Installers und durch Versionsnummernübergabe an das Updaterprogramm auch Version des Updater Scriptes
 
     func_term_output
     echo "$PROGNAME: Der Calibre-Autoupdate-Installer (CAUI) v$VERSION"
@@ -39,7 +39,7 @@ func_version () {  # Versionsauskunft des Installers
     return 0
 }
 
-func_progressbar() {
+func_progressbar() {		# Funktion Fortschrittsanzeige, Fake - Joke
     echo -e -n $'\033[34m------------------------------------------------------------------------- 100%\r'
     echo -e -n "\033[32m0% "
     for ((i=0; i<61; i++)); do
