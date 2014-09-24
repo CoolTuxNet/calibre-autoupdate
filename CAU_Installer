@@ -61,7 +61,7 @@ func_install_noroot() {
     echo -e "\n\033[1;36mDie Programm-Dateien werden nach $BIN kopiert\e[m\e[m"
     if [ ! -d $BIN ]; then mkdir $BIN; fi; if [ ! -d $ETC ]; then mkdir $ETC; fi; if [ ! -d $INC ]; then mkdir $INC; fi
     cp calibre-autoupdate $BIN; chmod 755 $BIN"calibre-autoupdate"
-    sed -i "s/_-ETC-_/${ETC//\//\/}/g" $BIN"calibre-autoupdate"		# Eintragen des Verzeichnisfades zum Configfile im Updaterscript
+    sed -i "s/_-ETC-_/$#{ETC/#/\//\/}/g" $BIN"calibre-autoupdate"		# Eintragen des Verzeichnisfades zum Configfile im Updaterscript
     sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"	# Eintragen der Version vom Updater im Main-Updatescript
     func_progressbar	# Fortschritsbalken des Kopiervorganges; Fake
     echo -e "\n\033[1;36mDie Header-Dateien werden nach $INC kopiert\e[m"
@@ -69,9 +69,9 @@ func_install_noroot() {
     func_progressbar
     echo -e "\n\033[1;36mDie Konfigurations-Dateien werden nach $ETC kopiert\e[m"
     cp calibre-autoupdate.conf $ETC; chmod 644 $ETC"calibre-autoupdate.conf";
-    sed -i "s/_-INC-_/${INC//\//\/}/g" $ETC"calibre-autoupdate.conf"	# In beiden sed Befehlen werden Verzeichnisfade in das Configfile geschrieben 
-    sed -i "s/_-BIN-_/${BIN//\//\/}/g" $ETC"calibre-autoupdate.conf"
-    sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/g" $ETC"calibre-autoupdate.conf"
+    sed -i "s/_-INC-_/$#{INC/#/\//\/}/g" $ETC"calibre-autoupdate.conf"	# In beiden sed Befehlen werden Verzeichnisfade in das Configfile geschrieben 
+    sed -i "s/_-BIN-_/$#{BIN/#/\//\/}/g" $ETC"calibre-autoupdate.conf"
+    sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/$#{CALIBRE_INSTALL_LOCATION/#/\//\/}/g" $ETC"calibre-autoupdate.conf"
     func_progressbar
     return 0
 }
@@ -81,7 +81,7 @@ func_install_root() {		# Wie in der func_install_noroot Funktion nur mit dem SUD
     sudo echo -e "\n\033[1;36mDie Programm-Dateien werden nach $BIN kopiert\e[m\e[m"
     if [ ! -d $BIN ]; then sudo mkdir $BIN; fi; if [ ! -d $ETC ]; then sudo mkdir $ETC; fi; if [ ! -d $INC ]; then sudo mkdir $INC; fi
     sudo cp calibre-autoupdate $BIN; sudo chmod 755 $BIN"calibre-autoupdate"
-    sudo sed -i "s/_-ETC-_/${ETC//\//\/}/" $BIN"calibre-autoupdate"
+    sudo sed -i "s/_-ETC-_/$#{ETC/#/\//\/}/" $BIN"calibre-autoupdate"
     sudo sed -i "s/_-VERSION-_/${VERSION//\//\/}/" $BIN"calibre-autoupdate"
     func_progressbar
     echo -e "\n\033[1;36mDie Header-Dateien werden nach $INC kopiert\e[m"
@@ -89,9 +89,9 @@ func_install_root() {		# Wie in der func_install_noroot Funktion nur mit dem SUD
     func_progressbar
     echo -e "\n\033[1;36mDie Konfigurations-Dateien werden nach $ETC kopiert\e[m"
     sudo cp calibre-autoupdate.conf $ETC; sudo chmod 644 $ETC"calibre-autoupdate.conf";
-    sudo sed -i "s/_-INC-_/${INC//\//\/}/" $ETC"calibre-autoupdate.conf"
-    sudo sed -i "s/_-BIN-_/${BIN//\//\/}/" $ETC"calibre-autoupdate.conf"
-    sudo sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/${CALIBRE_INSTALL_LOCATION//\//\/}/" $ETC"calibre-autoupdate.conf"
+    sudo sed -i "s/_-INC-_/$#{INC/#/\//\/}/" $ETC"calibre-autoupdate.conf"
+    sudo sed -i "s/_-BIN-_/$#{BIN/#/\//\/}/" $ETC"calibre-autoupdate.conf"
+    sudo sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/$#{CALIBRE_INSTALL_LOCATION/#/\//\/}/" $ETC"calibre-autoupdate.conf"
     func_progressbar
     return 0
 }
