@@ -18,7 +18,7 @@
 
 # Programmversion
 PROGNAME=`basename $0`
-VERSION="0.21.90.1"
+VERSION="0.22"
 
 ##### Variablen deklaration #####
 # Downloadseite der Linuxinstallation
@@ -38,7 +38,7 @@ func_change_install_dir() {   # Funktion zur Abfrage der Installationsorte vom U
 	UPDATER_INSTALL_LOCATION=/usr/local
     fi
     while [ ! -d $UPDATER_INSTALL_LOCATION ]; do
-	echo -e "\n\033[1;31mDas Verzeichnis $UPDATER_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis ein!\e[m"
+	echo -e "\n\033[1;31mDas Verzeichnis $UPDATER_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis an!\e[m"
 	read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local] " UPDATER_INSTALL_LOCATION
     done
     # Installationsort von Calibre
@@ -47,7 +47,7 @@ func_change_install_dir() {   # Funktion zur Abfrage der Installationsorte vom U
 	CALIBRE_INSTALL_LOCATION=/opt
     fi
     while [ ! -d $CALIBRE_INSTALL_LOCATION ]; do	# Abfangen bei nicht vorhanden sein des Installationsortes
-	echo -e "\n\033[1;31mDas Verzeichnis $CALIBRE_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis ein!\e[m"
+	echo -e "\n\033[1;31mDas Verzeichnis $CALIBRE_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis an!\e[m"
 	read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
     done
     # Verzeichnishierarchie am Installationsort
@@ -81,17 +81,17 @@ func_install_root() {		# Wie in der func_install_noroot Funktion nur mit dem SUD
     sudo echo -e "\n\033[1;36mDie Programm-Dateien werden nach $BIN kopiert\e[m\e[m"
     if [ ! -d $BIN ]; then sudo mkdir $BIN; fi; if [ ! -d $ETC ]; then sudo mkdir $ETC; fi; if [ ! -d $INC ]; then sudo mkdir $INC; fi
     sudo cp calibre-autoupdate $BIN; sudo chmod 755 $BIN"calibre-autoupdate"
-    sudo sed -i "s/_-ETC-_/$#{ETC/#/\//\/}/" $BIN"calibre-autoupdate"
-    sudo sed -i "s/_-VERSION-_/${VERSION//\//\/}/" $BIN"calibre-autoupdate"
+    sudo sed -i "s@_-ETC-_@$ETC@" $BIN/calibre-autoupdate
+    sudo sed -i "s@_-VERSION-_@$VERSION@" $BIN/calibre-autoupdate
     func_progressbar
     echo -e "\n\033[1;36mDie Header-Dateien werden nach $INC kopiert\e[m"
     sudo cp calibre-autoupdate.h calibre-autoupdate_checks.h $INC; sudo chmod 644 $INC"calibre-autoupdate.h" $INC"calibre-autoupdate_checks.h"
     func_progressbar
     echo -e "\n\033[1;36mDie Konfigurations-Dateien werden nach $ETC kopiert\e[m"
     sudo cp calibre-autoupdate.conf $ETC; sudo chmod 644 $ETC"calibre-autoupdate.conf";
-    sudo sed -i "s/_-INC-_/$#{INC/#/\//\/}/" $ETC"calibre-autoupdate.conf"
-    sudo sed -i "s/_-BIN-_/$#{BIN/#/\//\/}/" $ETC"calibre-autoupdate.conf"
-    sudo sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/$#{CALIBRE_INSTALL_LOCATION/#/\//\/}/" $ETC"calibre-autoupdate.conf"
+    sudo sed -i "s@_-INC-_@$INC@" $ETC/calibre-autoupdate.conf
+    sudo sed -i "s@_-BIN-_@$BIN@" $ETC/calibre-autoupdate.conf
+    sudo sed -i "s@_-CALIBRE_INSTALL_LOCATION-_@$CALIBRE_INSTALL_LOCATION@" $ETC/calibre-autoupdate.conf
     func_progressbar
     return 0
 }
