@@ -141,15 +141,15 @@ func_install_calibre() {
 	wget -nv -O- $DOWNLOAD_URL | python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
 	if [ ! -w "$ECT" ]; then
 	    echo -e "\033[1;34mDu hast kein Schreibrecht auf $ETC. Die Updater Konfigurationsdatei wird mit SUDO angepasst. Bitte gib hierzu Dein Userpasswort im Terminal ein...\n\e[m"
-	    sudo sed -i "s/CALIBRE_INSTALL_LOCATION=.*/CALIBRE_INSTALL_LOCATION=${CALIBRE_INSTALL_LOCATION//\//\/}/" $ETC"calibre-autoupdate.conf"
+	    sudo sed -i "s/CALIBRE_INSTALL_LOCATION=.*/CALIBRE_INSTALL_LOCATION=$#{CALIBRE_INSTALL_LOCATION/#/\//\/}/" $ETC"calibre-autoupdate.conf"
 	else
-	    sed -i "s/CALIBRE_INSTALL_LOCATION=.*/CALIBRE_INSTALL_LOCATION=${CALIBRE_INSTALL_LOCATION//\//\/}/" $ETC"calibre-autoupdate.conf"
+	    sed -i "s/CALIBRE_INSTALL_LOCATION=.*/CALIBRE_INSTALL_LOCATION=$#{CALIBRE_INSTALL_LOCATION/#/\//\/}/" $ETC"calibre-autoupdate.conf"
 	fi
     else	     	     
 	echo -e "\033[1;34mDu hast kein Schreibrecht auf $CALIBRE_INSTALL_LOCATION."
 	echo -e "Calibre wird mit SUDO installiert. Bitte gib hierzu Dein Userpasswort ein...\n\e[m"
 	sudo -v && wget -nv -O- $DOWNLOAD_URL | sudo python -c "import sys; main=lambda x:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main('$CALIBRE_INSTALL_LOCATION')"
-	sudo sed -i "s/CALIBRE_INSTALL_LOCATION=.*/CALIBRE_INSTALL_LOCATION=${CALIBRE_INSTALL_LOCATION//\//\/}/" $ETC"calibre-autoupdate.conf"
+	sudo sed -i "s/CALIBRE_INSTALL_LOCATION=.*/CALIBRE_INSTALL_LOCATION=$#{CALIBRE_INSTALL_LOCATION/#/\//\/}/" $ETC"calibre-autoupdate.conf"
     fi
     echo -e "\n\n\033[1;32mHerzlichen Glückwunsch. Calibre wurde unter $CALIBRE_INSTALL_LOCATION installiert"
     echo -e "und kann nun mit \"calibre\" verwendet werden.\n\033[0m"

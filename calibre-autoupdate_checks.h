@@ -105,8 +105,8 @@ func_check_prog () {         # Schaut ob Calibre und benötigte Programme instal
 	$NOTIFY "Du hast AWK nich installiert, es wird aber für die Updatefunktion benötigt"
 	exit 0
     fi
-    if [ ! -f /usr/bin/notify-send ]; then
-	echo -e "\e[0;33mDu hast Notify-Send nich installiert, das Programm ist optional und wird\e[m"
+    if [ ! -f /usr/bin/kdialog ]; then
+	echo -e "\e[0;33mDu hast kdialog nich installiert, das Programm ist optional und wird\e[m"
 	echo -e "für die Upatefunktion nicht unbedingt benötigt\n\e[m"
 	sleep 10
     fi

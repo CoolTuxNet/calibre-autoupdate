@@ -91,6 +91,10 @@
 # v0.21  Um die neuste Version von der Calibrehomepage fest zu stellen wurde die Routine geändert. Es wird nun ganz
 #        einfach und simpel die Seite http://calibre-ebook.com/downloads/latest_version abgefragt   :-D
 #
+# v0.22  Statt notify-send wurde nun kdialog integriert. Bedeutet aber das nur unter KDE Benachrichtigungen ausserhalb
+#	 der Konsole ausgegeben werden. Außerdem wurde sed für den /s Parameter angepasst. Da gab es in der letzten
+#	 sed Version eine Änderung
+#
 # TODO	 Auslesen der Download URL von der Download Seite
 #        kontrolle ob alle benötigten programme für das skript vorhanden sind
 #
@@ -128,7 +132,7 @@ source $INC/calibre-autoupdate_checks.h
 
 # Wenn eine grafische Oberfläche vorhanden ist, wird u.a. "notify-send" für Benachrichtigungen verwendet, ansonsten immer "echo"
 NOTIFY="echo"
-[ -n "$DISPLAY" ] && NOTIFY="notify-send -t 10000 -i /usr/share/icons/hicolor/256x256/apps/calibre-gui.png Calibre-Auto-Updater"
+[ -n "$DISPLAY" ] && NOTIFY="kdialog --passivepopup"
     
 #######################################################
 
