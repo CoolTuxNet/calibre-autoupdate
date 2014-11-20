@@ -1,0 +1,134 @@
+#!/bin/bash
+#  Calibre Auto Updater Installscript
+#    Copyright (C) 2013-2014  Leon Gaultier
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>
+
+
+# Programmversion
+PROGNAME=`basename $0`
+VERSION="0.22.1"
+
+##### Variablen deklaration #####
+# Downloadseite der Linuxinstallation
+DOWNLOAD_URL=https://github.com/kovidgoyal/calibre/raw/master/setup/linux-installer.py
+
+#################################
+########### Einbinden der Headerfiles ################
+source CAU_Installer.h
+
+#################################
+
+
+func_change_install_dir() {   # Funktion zur Abfrage der Installationsorte vom Updater und von Calibre
+    # Installationsort vom Updater
+    read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local] " UPDATER_INSTALL_LOCATION
+    if [ -z $UPDATER_INSTALL_LOCATION ]; then
+	UPDATER_INSTALL_LOCATION=/usr/local
+    fi
+    while [ ! -d $UPDATER_INSTALL_LOCATION ]; do
+	echo -e "\n\033[1;31mDas Verzeichnis $UPDATER_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis an!\e[m"
+	read -p "Wo soll der Calibre-Autoupdater installiert werden? [default /usr/local] " UPDATER_INSTALL_LOCATION
+    done
+    # Installationsort von Calibre
+    read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
+    if [ -z $CALIBRE_INSTALL_LOCATION ]; then
+	CALIBRE_INSTALL_LOCATION=/opt
+    fi
+    while [ ! -d $CALIBRE_INSTALL_LOCATION ]; do	# Abfangen bei nicht vorhanden sein des Installationsortes
+	echo -e "\n\033[1;31mDas Verzeichnis $CALIBRE_INSTALL_LOCATION existiert nicht. Bitte gib ein existierendes Verzeichnis an!\e[m"
+	read -p "Wo befindet sich die Calibre Installation? [default /opt] " CALIBRE_INSTALL_LOCATION
+    done
+    # Verzeichnishierarchie am Installationsort
+    INC=$UPDATER_INSTALL_LOCATION/include/
+    ETC=$UPDATER_INSTALL_LOCATION/etc/
+    BIN=$UPDATER_INSTALL_LOCATION/bin/
+    return 0
+}
+
+func_install_noroot() {
+    echo -e "\n\033[1;36mDie Programm-Dateien werden nach $BIN kopiert\e[m\e[m"
+    if [ ! -d $BIN ]; then mkdir $BIN; fi; if [ ! -d $ETC ]; then mkdir $ETC; fi; if [ ! -d $INC ]; then mkdir $INC; fi
+    cp calibre-autoupdate $BIN; chmod 755 $BIN"calibre-autoupdate"
+    sed -i "s/_-ETC-_/$#{ETC/#/\//\/}/g" $BIN"calibre-autoupdate"		# Eintragen des Verzeichnisfades zum Configfile im Updaterscript
+    sed -i "s/_-VERSION-_/${VERSION//\//\/}/g" $BIN"calibre-autoupdate"	# Eintragen der Version vom Updater im Main-Updatescript
+    func_progressbar	# Fortschritsbalken des Kopiervorganges; Fake
+    echo -e "\n\033[1;36mDie Header-Dateien werden nach $INC kopiert\e[m"
+    cp calibre-autoupdate.h calibre-autoupdate_checks.h $INC; chmod 644 $INC"calibre-autoupdate.h" $INC"calibre-autoupdate_checks.h"
+    func_progressbar
+    echo -e "\n\033[1;36mDie Konfigurations-Dateien werden nach $ETC kopiert\e[m"
+    cp calibre-autoupdate.conf $ETC; chmod 644 $ETC"calibre-autoupdate.conf";
+    sed -i "s/_-INC-_/$#{INC/#/\//\/}/g" $ETC"calibre-autoupdate.conf"	# In beiden sed Befehlen werden Verzeichnisfade in das Configfile geschrieben 
+    sed -i "s/_-BIN-_/$#{BIN/#/\//\/}/g" $ETC"calibre-autoupdate.conf"
+    sed -i "s/_-CALIBRE_INSTALL_LOCATION-_/$#{CALIBRE_INSTALL_LOCATION/#/\//\/}/g" $ETC"calibre-autoupdate.conf"
+    func_progressbar
+    return 0
+}
+
+func_install_root() {		# Wie in der func_install_noroot Funktion nur mit dem SUDO Befehl für Rootinstallation
+    echo -e "\n\033[1;34mDu hast kein Schreibrecht auf $UPDATER_INSTALL_LOCATION, daher wird SUDO versucht zu verwenden...\e[m";
+    sudo echo -e "\n\033[1;36mDie Programm-Dateien werden nach $BIN kopiert\e[m\e[m"
+    if [ ! -d $BIN ]; then sudo mkdir $BIN; fi; if [ ! -d $ETC ]; then sudo mkdir $ETC; fi; if [ ! -d $INC ]; then sudo mkdir $INC; fi
+    sudo cp calibre-autoupdate $BIN; sudo chmod 755 $BIN"calibre-autoupdate"
+    sudo sed -i "s@_-ETC-_@$ETC@" $BIN/calibre-autoupdate
+    sudo sed -i "s@_-VERSION-_@$VERSION@" $BIN/calibre-autoupdate
+    func_progressbar
+    echo -e "\n\033[1;36mDie Header-Dateien werden nach $INC kopiert\e[m"
+    sudo cp calibre-autoupdate.h calibre-autoupdate_checks.h $INC; sudo chmod 644 $INC"calibre-autoupdate.h" $INC"calibre-autoupdate_checks.h"
+    func_progressbar
+    echo -e "\n\033[1;36mDie Konfigurations-Dateien werden nach $ETC kopiert\e[m"
+    sudo cp calibre-autoupdate.conf $ETC; sudo chmod 644 $ETC"calibre-autoupdate.conf";
+    sudo sed -i "s@_-INC-_@$INC@" $ETC/calibre-autoupdate.conf
+    sudo sed -i "s@_-BIN-_@$BIN@" $ETC/calibre-autoupdate.conf
+    sudo sed -i "s@_-CALIBRE_INSTALL_LOCATION-_@$CALIBRE_INSTALL_LOCATION@" $ETC/calibre-autoupdate.conf
+    func_progressbar
+    return 0
+}
+
+func_install_process() {    # Installiert den Calibre Updater
+    func_term_output		# Fake Fortschritsbalken
+    func_change_install_dir	# Auswahl der Installationsorte
+    if [ -w "$UPDATER_INSTALL_LOCATION" ]; then		# Installort Schreibgeschützt?
+	func_install_noroot		# Aufruf Installfunktion, Installation bei nicht schreibgeschützt
+    else
+	func_install_root		# Aufruf Installfunktion, Install als root da schreibgeschützt
+    fi
+    echo -e "\n\n\033[1;32mDer Calibre-Autoupdater wurde erfolgreich installiert und"
+    echo -e "kann nun mit \"calibre-update\" oder \"$BIN"calibre-update"\" aufgerufen werden\e[m\n"
+    return 0
+}
+
+
+#### Main Funktion ####
+while test "$#" -gt 0; do	# Abfangen und Auswerten der Optionen die beim Aufruf mit angehängt wurden
+    arg="$1"
+    shift
+    case $arg in
+	-*=*) optarg=`echo "$arg" | sed -e 's/[-_a-zA-Z0-9]*=//'` ;;
+	*) optarg= ;;
+    esac
+
+    case "$arg" in
+	--help | -h )
+	  func_help; exit 0 ;;
+	--version | -V | -v )
+	  func_version; exit 0 ;;
+	--install | -i | -I )
+	  func_install_process; exit 0 ;;
+    esac
+done
+func_term_output
+func_usage
+echo -e "\e[m"
+exit 0
