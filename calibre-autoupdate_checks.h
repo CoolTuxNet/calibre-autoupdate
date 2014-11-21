@@ -3,39 +3,40 @@
 #
 
 func_http_status_code () {
-    echo -e "\033[1;34m Hole Status Code von $CHECK_CALIBRE_DOWNLOAD_PAGE. Bitte warten.\e[m"
+    echo -e "\033[1;34m Ermittle Status von $CHECK_CALIBRE_DOWNLOAD_PAGE. Bitte warten.\e[m"
     stat_1=$(curl -o /dev/null --silent --head --write-out '%{http_code}' $CHECK_CALIBRE_DOWNLOAD_PAGE)
     func_progressbar
-    echo -e "\033[32m Status Codes von $CHECK_CALIBRE_DOWNLOAD_PAGE erhalten\e[m"
-    echo -e "\n\033[1;34m Hole Status Code von $CHECK_DOWNLOAD_URL. Bitte warten.\e[m"
+    echo -e "\033[32m Abgeschlossen\e[m"
+    echo -e "\n\033[1;34m Ermittle Status Code von $CHECK_DOWNLOAD_URL. Bitte warten.\e[m"
     stat_2=$(curl -o /dev/null --silent --head --write-out '%{http_code}' $CHECK_DOWNLOAD_URL)
     func_progressbar
-    echo -e "\033[32m Status Codes von $CHECK_DOWNLOAD_URL erhalten\e[m"
+    echo -e "\033[32m Abgeschlossen\e[m"
     return 0
 }
 
-func_check_stat () { 	# Funktion zum Check Verfügbarkeit der Downloadseiten und der Internetverbindung
+func_check_stat () {    # Funktion zum Check Verfügbarkeit der Downloadseiten und der Internetverbindung
     # Test for network conection
     echo -e "\n\033[1;34m Suche nach vorhandenen Netzwerk für die Verbindung zum Internet :-)\e[m"
     for INTERFACE in $(ls /sys/class/net/ | grep -v lo); do
-	if [[ $(cat /sys/class/net/$INTERFACE/carrier) = 1 ]]; then 
-	    ONLINE=1
-	fi
+        if [[ $(cat /sys/class/net/$INTERFACE/carrier) = 1 ]] && [[ -n $(ifconfig $INTERFACE | grep 'inet Adresse:' | cut -d: -f2 | awk '{ print $1 }') ]]; then
+            ONLINE=1
+            IFACE=$INTERFACE
+        fi
     done
     func_progressbar
     if [ $ONLINE ]; then
-	echo -e "\033[32m Es wurde ein Netzwerkinterface gefunden. Verbinde über Interface $INTERFACE\n\e[m"
-	func_http_status_code
-	if [[ $stat_1 -eq 200 && $stat_2 -eq 200 ]]; then
-	    return 1
-	elif [[ $stat_1 -eq !200 ]]; then
-	    return 2
-	else
-	    return 3
-	fi
+        echo -e "\033[32m Es wurde ein Netzwerkinterface gefunden. Verbinde über Interface $IFACE\n\e[m"
+        func_http_status_code
+        if [[ $stat_1 -eq 200 && $stat_2 -eq 200 ]]; then
+            return 1
+        elif [[ $stat_1 -eq !200 ]]; then
+            return 2
+        else
+            return 3
+        fi
     else
-	echo -e "\n\033[31m Fehler!!! Bitte schau Dir die Desktop Benachrichtigung an!\e[m"
-	return 4
+        echo -e "\n\033[31m Fehler!!! Bitte schau Dir die Desktop Benachrichtigung an!\e[m"
+        return 4
     fi
     return 0
 }
