@@ -25,7 +25,7 @@ func_check_stat () {    # Funktion zum Check Verfügbarkeit der Downloadseiten u
     done
     func_progressbar
     if [ $ONLINE ]; then
-        echo -e "\033[32m Es wurde ein Netzwerkinterface gefunden. Verbinde über Interface $IFACE\n\e[m"
+        echo -e "\033[32m Es wurde ein Netzwerkinterface gefunden. Verbindung über Interface $IFACE\n\e[m"
         func_http_status_code
         if [[ $stat_1 -eq 200 && $stat_2 -eq 200 ]]; then
             return 1
