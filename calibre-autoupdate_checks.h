@@ -17,7 +17,7 @@ func_http_status_code () {
 func_check_stat () {    # Funktion zum Check Verfügbarkeit der Downloadseiten und der Internetverbindung
     # Test for network conection
     echo -e "\n\033[1;34m Suche nach vorhandenen Netzwerk für die Verbindung zum Internet :-)\e[m"
-    for INTERFACE in $(ls /sys/class/net/ | grep -v lo); do
+    for INTERFACE in $(ls /sys/class/net/ | grep -v 'lo\|vir*'); do
         if [[ $(cat /sys/class/net/$INTERFACE/carrier) = 1 ]] && [[ -n $(ifconfig $INTERFACE | grep 'inet Adresse:' | cut -d: -f2 | awk '{ print $1 }') ]]; then
             ONLINE=1
             IFACE=$INTERFACE
