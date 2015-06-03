@@ -1,5 +1,5 @@
 #  Calibre Auto Updater Configfile
-#    Copyright (C) 2013-2014  Leon Gaultier
+#  Copyright (C) 2013-2015  Leon Gaultier
 #
 
 func_http_status_code () {

@@ -1,11 +1,11 @@
 #  Calibre Auto Updater Header File
-#    Copyright (C) 2013-2014  Leon Gaultier
+#    Copyright (C) 2013-2015  Leon Gaultier
 #
 
 func_term_output () {			# einheitliche Terminalausgabe, Terminal löschen
     ## Beginne mit der Ausgbe ##
     tty -s && clear
-    echo -e "\033[44m \033[0m\033[1m $PROGNAME: Der Calibre-Autoupdate-Installer Version $VERSION\033[0m\n\033[44m \033[0m 2013-2014 by Leon Gaultier\n\e[m";
+    echo -e "\033[44m \033[0m\033[1m $PROGNAME: Der Calibre-Autoupdate-Installer Version $VERSION\033[0m\n\033[44m \033[0m 2013-2015 by Leon Gaultier\n\e[m";
     return 0
 }
 
